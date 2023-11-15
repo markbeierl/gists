@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"name": "charmed-5g",
+			"path": "../../canonical/charmed-5g"
+		},
+		{
+			"name": "sdcore-amf-operator",
+			"path": "../../canonica/lsdcore-amf-operator"
+		},
+		{
+			"name": "sdcore-upf-operator",
+			"path": "../../canonical/sdcore-upf-operator"
+		},
+		{
+			"name": "UERANSIM",
+			"path": "../../aligungr/UERANSIM"
+		},
+		{
+			"path": "../../canonical/../markbeierl/ueransim-gnb-operator"
+		},
+		{
+			"path": "../../canonical/../markbeierl/ueransim-rock"
+		}
+	],
+	"settings": {}
+}
