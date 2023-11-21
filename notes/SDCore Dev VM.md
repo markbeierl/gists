@@ -1,9 +1,9 @@
-# Notes.md
+# SDCore Dev VM
 
 ## Redo VM
 Sphinx docs
 ```bash
-sudo apt install python3.10-venv
+sudo apt install python3-pip
 sudo apt install aspell
 ```
 Tox
@@ -48,8 +48,9 @@ sudo microk8s enable multus
 wait
 ```
 
+Really only need 0.6-0.8, but leave more to see what else might get used
 ```bash
-sudo microk8s enable metallb:10.201.0.6-10.201.0.8
+sudo microk8s enable metallb:10.201.0.6-10.201.0.10
 juju add-model core
 juju deploy sdcore-router router --trust --channel=edge --config access-interface-mtu-size=1392 --config core-interface-mtu-size=1392 --config ran-interface-mtu-size=1392
 ```
