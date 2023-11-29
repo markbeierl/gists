@@ -3,12 +3,10 @@
 ## Redo VM
 Sphinx docs
 ```bash
-sudo apt install python3-pip
-sudo apt install aspell
+sudo apt install python3-pip python3.10-venv aspell
 ```
 Tox
 ```bash
-sudo apt install python3-pip
 pip install tox
 export PATH=/home/ubuntu/.local/bin:$PATH
 ```
@@ -19,8 +17,8 @@ lxc network set lxdbr0 bridge.mtu=1442
 ```
 Crafts
 ```bash
-sudo snap install rockcraft --classic
-sudo snap install snapcraft --classic
+sudo snap install rockcraft --classic &
+sudo snap install snapcraft --classic &
 sudo snap install charmcraft --classic
 ```
 Microk8s Group

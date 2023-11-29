@@ -6,11 +6,15 @@
 		},
 		{
 			"name": "sdcore-amf-operator",
-			"path": "../../canonica/lsdcore-amf-operator"
+			"path": "../../canonical/sdcore-amf-operator"
 		},
 		{
 			"name": "sdcore-upf-operator",
 			"path": "../../canonical/sdcore-upf-operator"
+		},
+		{
+			"name": "sdcore-upf-bess-rock",
+			"path": "../../canonical/sdcore-upf-bess-rock"
 		},
 		{
 			"name": "UERANSIM",
@@ -21,6 +25,12 @@
 		},
 		{
 			"path": "../../canonical/../markbeierl/ueransim-rock"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../../omec-project/upf"
 		}
 	],
 	"settings": {}

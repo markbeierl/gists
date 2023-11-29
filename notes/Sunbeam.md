@@ -40,7 +40,7 @@ microceph_config:
 Install controller and first compute on Xeon
 
 ```bash
-sudo snap install openstack --channel 2023.2/candidate
+sudo snap install openstack --channel 2023.1/stable
 sunbeam prepare-node-script | bash -x
 sunbeam cluster bootstrap --database single --role control --role compute --role storage -p ./sunbeam-preseed.yaml
 sunbeam configure -p ./sunbeam-preseed.yaml -o ./sunbeam-user.rc
@@ -88,6 +88,15 @@ for HV in $(openstack resource provider list -c uuid -f value) ; do
 done
 ```
 
+### Images
+
+```bash
+openstack image create --public --container-format=bare --disk-format=qcow2 ubuntu16.04 --file=/home/mark/Downloads/ubuntu-16.04-server-cloudimg-amd64-disk1.img
+openstack image create --public --container-format=bare --disk-format=qcow2 ubuntu18.04 --file=/home/mark/Downloads/ubuntu-18.04-server-cloudimg-amd64.img
+openstack image create --public --container-format=bare --disk-format=qcow2 ubuntu20.04 --file=/home/mark/Downloads/ubuntu-20.04-server-cloudimg-amd64.img
+```
+
+
 ## Networking for SD-Core
 As admin
 ```bash
@@ -98,55 +107,56 @@ As admin
 I didn't add gateways for access, ran or core as that interferes witht the default route.  Each server will assign its own routes anyway for the networks.
 
 ```bash
-openstack network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1201 management
-openstack subnet create --dhcp --gateway 10.201.0.1 --dns-nameserver 10.0.0.2 --allocation-pool start=10.201.1.0,end=10.201.1.254 --subnet-range 10.201.0.0/16 --network management subnet.10.201.0.0
+openstack << EOF
+network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1201 management
+subnet create --dhcp --gateway 10.201.0.1 --dns-nameserver 10.0.0.2 --allocation-pool start=10.201.1.0,end=10.201.1.254 --subnet-range 10.201.0.0/16 --network management subnet.10.201.0.0
 
-openstack network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1202 access
-openstack subnet create --dhcp --allocation-pool start=10.202.1.0,end=10.202.1.254 --subnet-range 10.202.0.0/16 --network access subnet.10.202.0.0
+network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1202 access
+subnet create --dhcp --gateway none --allocation-pool start=10.202.1.0,end=10.202.1.254 --subnet-range 10.202.0.0/16 --network access subnet.10.202.0.0 --host-route destination=10.204.0.0/16,gateway=10.202.0.1
 
-openstack network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1203 core
-openstack subnet create --dhcp --allocation-pool start=10.203.1.0,end=10.203.1.254 --subnet-range 10.203.0.0/16 --network core subnet.10.203.0.0
+network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1203 core
+subnet create --dhcp --gateway none --allocation-pool start=10.203.1.0,end=10.203.1.254 --subnet-range 10.203.0.0/16 --network core subnet.10.203.0.0
 
-openstack network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1204 ran
-openstack subnet create --dhcp --allocation-pool start=10.204.1.0,end=10.204.1.254 --subnet-range 10.204.0.0/16 --network ran subnet.10.204.0.0
+network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1204 ran
+subnet create --dhcp --gateway none --allocation-pool start=10.204.1.0,end=10.204.1.254 --subnet-range 10.204.0.0/16 --network ran subnet.10.204.0.0 --host-route destination=10.202.0.0/16,gateway=10.204.0.1
+EOF
 ```
 
 ### Ports
 ```bash
 export PROJECT=demo
-export KEY_NAME=mbeierl
 . ~/bin/sunbeam-admin.rc
 ```
 #### Core Router
 ```bash
-openstack port create --disable-port-security --fixed-ip ip-address=10.203.0.1 --enable --project ${PROJECT} --network core router.core
+openstack port create --disable-port-security --fixed-ip ip-address=10.203.0.1 --enable --project ${PROJECT} --network core router.core &
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.10.254 --enable --project ${PROJECT} --network management core-router.management
 ```
 
 #### RAN/Access ROUTER
 
 ```bash
-openstack port create --disable-port-security --fixed-ip ip-address=10.202.0.1 --enable --project ${PROJECT} --network access router.access
-openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.1 --enable --project ${PROJECT} --network ran router.ran
+openstack port create --disable-port-security --fixed-ip ip-address=10.202.0.1 --enable --project ${PROJECT} --network access router.access &
+openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.1 --enable --project ${PROJECT} --network ran router.ran &
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.11.254 --enable --project ${PROJECT} --network management ran-access-router.management
 ```
 
 #### Service VMs
 
 ```bash
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.10 --enable --project ${PROJECT} --network management juju-controller.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.11 --enable --project ${PROJECT} --network management control-plane.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.12 --enable --project ${PROJECT} --network management user-plane.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.13 --enable --project ${PROJECT} --network management gnbsim.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.14 --enable --project ${PROJECT} --network management ueransim.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.201 --enable --project ${PROJECT} --network management ue-1.mgmt
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.202 --enable --project ${PROJECT} --network management ue-2.mgmt
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.10 --enable --project ${PROJECT} --network management juju-controller.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.11 --enable --project ${PROJECT} --network management control-plane.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.12 --enable --project ${PROJECT} --network management user-plane.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.13 --enable --project ${PROJECT} --network management gnbsim.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.14 --enable --project ${PROJECT} --network management ueransim.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.2.1 --enable --project ${PROJECT} --network management ue-1.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.2.2 --enable --project ${PROJECT} --network management ue-2.mgmt
 ```
 
 #### Ports for UPF
 
 ```bash
-openstack port create --disable-port-security --fixed-ip ip-address=10.202.0.2 --enable --project ${PROJECT} --network access user-plane.access
+openstack port create --disable-port-security --fixed-ip ip-address=10.202.0.2 --enable --project ${PROJECT} --network access user-plane.access&
 openstack port create --disable-port-security --fixed-ip ip-address=10.203.0.2 --enable --project ${PROJECT} --network core user-plane.core
 ```
 
@@ -171,21 +181,25 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.102
 ### Flavours
 
 ```bash
-openstack flavor create 2C-4R-20D-hp --public --vcpus 2 --ram 4092 --disk 20 --property hw:mem_page_size=1gb
-
-openstack flavor create juju-controller --public --vcpus 2 --ram 4092 --disk 20
-openstack flavor create control-plane --public --vcpus 4 --ram 8192 --disk 120 
-openstack flavor create user-plane --public --vcpus 4 --ram 4092 --disk 20
-openstack flavor create gnbsim --public --vcpus 4 --ram 4092 --disk 20
-openstack flavor create ransim --public --vcpus 12 --ram 4092 --disk 20
-openstack flavor create uesim --public --vcpus 2 --ram 4092 --disk 20
+openstack << EOF
+flavor create 2C-4R-20D-hp    --public --vcpus 2 --ram 4096 --disk 20 --property hw:mem_page_size=1GB
+flavor create juju-controller --public --vcpus 2 --ram 4092 --disk 20
+flavor create control-plane   --public --vcpus 4 --ram 8192 --disk 120 
+flavor create user-plane      --public --vcpus 4 --ram 8192 --disk 20
+flavor create gnbsim          --public --vcpus 4 --ram 4092 --disk 20
+flavor create ransim          --public --vcpus 4 --ram 4092 --disk 20
+flavor create uesim           --public --vcpus 2 --ram 4092 --disk 20
+flavor create router          --public --vcpus 1 --ram 2048 --disk 20
+EOF
 ```
 
 ## Servers
 
-As user
+As user, create key
 ```bash
 . ~/bin/sunbeam-user.rc
+export KEY_NAME=mbeierl
+openstack keypair create ${KEY_NAME} --public-key ./id_rsa.pub
 ```
 
 ### Core Router
@@ -194,10 +208,11 @@ openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor
 ```
 - log in, set up port forward, nat
 ```bash
+ssh ubuntu@core-router.mgmt
 cat << EOF | sudo tee /etc/rc.local
 #!/bin/bash
 
-sudo iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE -s 10.203.0.0/16
+sudo iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE -s 172.250.0.0/16
 EOF
 sudo chmod +x /etc/rc.local
 echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
@@ -209,22 +224,36 @@ sudo init 6
 ```bash
 openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=ran-access-router.management --nic port-id=router.access --nic port-id=router.ran ran-access-router
 ```
+- Set up port forward
+```bash
+ssh ubuntu@ran-access-router.mgmt
+echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
+sudo init 6
+```
 
 ### Service VMs
 
 ```bash
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor juju-controller --image ubuntu --nic port-id=juju-controller.mgmt juju-controller
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor control-plane --image ubuntu --nic port-id=control-plane.mgmt control-plane
-openstack server create --availability-zone ryzen --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor gnbsim --image ubuntu --nic port-id=gnbsim.mgmt --nic port-id=gnbsim.ran gnbsim
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=ueransim.mgmt --nic port-id=ueransim.ran ransim
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-1.mgmt --nic port-id=ue-1.ran ue-1
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor juju-controller --image ubuntu --nic port-id=juju-controller.mgmt juju-controller&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor control-plane --image ubuntu --nic port-id=control-plane.mgmt control-plane&
+openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor gnbsim --image ubuntu --nic port-id=gnbsim.mgmt --nic port-id=gnbsim.ran gnbsim&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=ueransim.mgmt --nic port-id=ueransim.ran ransim&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-1.mgmt --nic port-id=ue-1.ran ue-1&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-2.mgmt --nic port-id=ue-2.ran ue-2
 ```
 
 # Bootstrapping
-Setup
-scp .ssh/id_rsa ubuntu@user-plane.mgmt:.ssh/
-scp .ssh/id_rsa ubuntu@control-plane.mgmt:.ssh/
-scp .ssh/id_rsa ubuntu@gnbsim.mgmt:.ssh/
-scp .ssh/id_rsa ubuntu@juju-controller.mgmt:.ssh/
+
+## Setup
+```bash
+scp ~/.ssh/id_rsa ubuntu@user-plane.mgmt:.ssh/
+scp ~/.ssh/id_rsa ubuntu@control-plane.mgmt:.ssh/
+scp ~/.ssh/id_rsa ubuntu@gnbsim.mgmt:.ssh/
+scp ~/.ssh/id_rsa ubuntu@juju-controller.mgmt:.ssh/
+
+for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ; do
+  setup-ceph.sh $VM
+done
+```
+
