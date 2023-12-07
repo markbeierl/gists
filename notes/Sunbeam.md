@@ -183,10 +183,12 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.102
 ```bash
 openstack << EOF
 flavor create 2C-4R-20D-hp    --public --vcpus 2 --ram 4096 --disk 20 --property hw:mem_page_size=1GB
+
 flavor create juju-controller --public --vcpus 2 --ram 8192 --disk 20
 flavor create control-plane   --public --vcpus 4 --ram 8192 --disk 120 
 flavor create user-plane      --public --vcpus 4 --ram 8192 --disk 20
 flavor create gnbsim          --public --vcpus 4 --ram 4092 --disk 20
+
 flavor create ransim          --public --vcpus 4 --ram 4092 --disk 20
 flavor create uesim           --public --vcpus 2 --ram 4092 --disk 20
 flavor create router          --public --vcpus 1 --ram 2048 --disk 20
@@ -206,17 +208,17 @@ openstack keypair create ${KEY_NAME} --public-key ./id_rsa.pub
 ```bash
 openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=core-router.management --nic port-id=router.core core-router
 ```
-- log in, set up port forward, nat
+- log in, set up ip forwarding and nat
 ```bash
 ssh ubuntu@core-router.mgmt
 cat << EOF | sudo tee /etc/rc.local
 #!/bin/bash
-
-sudo iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE -s 172.250.0.0/16
+iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE -s 10.203.0.0/16
 EOF
 sudo chmod +x /etc/rc.local
+sudo /etc/rc.local
 echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
-sudo init 6
+sudo sysctl -w net.ipv4.ip_forward=1
 ```
 
 ### Access/RAN Router
@@ -224,11 +226,11 @@ sudo init 6
 ```bash
 openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=ran-access-router.management --nic port-id=router.access --nic port-id=router.ran ran-access-router
 ```
-- Set up port forward
+- Set up IP forwarding
 ```bash
 ssh ubuntu@ran-access-router.mgmt
 echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
-sudo init 6
+sudo sysctl -w net.ipv4.ip_forward=1
 ```
 
 ### Service VMs

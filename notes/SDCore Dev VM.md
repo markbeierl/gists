@@ -200,8 +200,10 @@ sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-nms ~/git/Gi
 
 On the juju controller, deploy the NMS
 ```bash
-juju deploy sdcore-nms --channel=edge --resource sdcore-nms-image=mbeierl/sdcore-nms:0.2.0 nms
+juju deploy sdcore-nms --channel=edge --resource nms-image=mbeierl/sdcore-nms:0.2.0 nms
 juju relate webui:sdcore-management nms:sdcore-management
+juju relate nms:ingress traefik-k8s:ingress
+
 juju integrate upf:fiveg_n4 nms:fiveg_n4
 juju integrate gnbsim:fiveg_gnb_identity nms:fiveg_gnb_identity
 
