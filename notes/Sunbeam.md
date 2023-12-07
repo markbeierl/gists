@@ -61,7 +61,7 @@ sunbeam prepare-node-script | bash -x
 
 Get token from Xeon
 ```bash
-sunbeam cluster join --role control --role compute --token
+sunbeam cluster join --role compute --token
 ```
 
 ## Configure
@@ -183,7 +183,7 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.102
 ```bash
 openstack << EOF
 flavor create 2C-4R-20D-hp    --public --vcpus 2 --ram 4096 --disk 20 --property hw:mem_page_size=1GB
-flavor create juju-controller --public --vcpus 2 --ram 4092 --disk 20
+flavor create juju-controller --public --vcpus 2 --ram 8192 --disk 20
 flavor create control-plane   --public --vcpus 4 --ram 8192 --disk 120 
 flavor create user-plane      --public --vcpus 4 --ram 8192 --disk 20
 flavor create gnbsim          --public --vcpus 4 --ram 4092 --disk 20
@@ -236,7 +236,7 @@ sudo init 6
 ```bash
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor juju-controller --image ubuntu --nic port-id=juju-controller.mgmt juju-controller&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor control-plane --image ubuntu --nic port-id=control-plane.mgmt control-plane&
-openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane&
+openstack server create --availability-zone ryzen --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor gnbsim --image ubuntu --nic port-id=gnbsim.mgmt --nic port-id=gnbsim.ran gnbsim&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=ueransim.mgmt --nic port-id=ueransim.ran ransim&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-1.mgmt --nic port-id=ue-1.ran ue-1&

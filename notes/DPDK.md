@@ -3,17 +3,24 @@
 ## Microk8s
 
 ```
-sudo snap install microk8s --channel=1.27/stable
+sudo snap install microk8s --channel=1.27/stable --classic
 sudo microk8s enable hostpath-storage
-sudo microk8s enable metallb:10.201.0.200-10.201.0.200
+sudo microk8s enable metallb:10.201.0.201-10.201.0.201 &
 sudo microk8s addons repo add community \
     https://github.com/canonical/microk8s-community-addons \
     --reference feat/strict-fix-multus
 sudo microk8s enable multus
 
-sudo microk8s.config > user-plane-cluster.yaml
-scp user-plane-cluster.yaml juju-controller.mgmt:
+sudo snap install juju --channel=3.1/stable
+
+sudo microk8s.config > dpdk-cluster.yaml
+export KUBECONFIG=dpdk-cluster.yaml
+juju add-k8s dpdk-cluster
+juju bootstrap dpdk-cluster --config controller-service-type=loadbalancer dpdk
+juju add-model dpdk
 ```
+
+
 
 ## Remove Config
 
@@ -22,6 +29,7 @@ Log into user plane and possibly remove ens4 and ens5 from netplan
 ```
 echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio-pci.conf
 sudo modprobe vfio-pci
+modprobe vfio enable_unsafe_noiommu_mode=1
 
 sudo apt install driverctl
 
@@ -69,6 +77,7 @@ EOF
 kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/sriov-network-device-plugin/v3.3/deployments/k8s-v1.16/sriovdp-daemonset.yaml
 ```
 
+kubectl get node  -o json | jq '.items[].status.allocatable'
 
 
 ```bash
@@ -87,6 +96,8 @@ applications:
 EOF
 ```
 
+https://fast.dpdk.org/rel/dpdk-23.11.tar.xz
+
 ```
 cd ~/git/GitHub/canonical/sdcore-upf-bess-rock/
 time rockcraft pack
@@ -97,15 +108,24 @@ UPF Charm
 ```
 cd ~/git/GitHub/canonical/sdcore-upf-operator/
 time charmcraft pack
-juju deploy ./sdcore-upf_ubuntu-22.04-amd64.charm \
- --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
+juju deploy --trust ./sdcore-upf_ubuntu-22.04-amd64.charm \
+ --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
  --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
- --config upf-mode=dpdk \
  --config access-ip=10.202.0.10/24 \
  --config access-gateway-ip=10.202.0.1 \
  --config core-ip=10.203.0.10/24 \
  --config core-gateway-ip=10.203.0.1 \
- --config access-interface-mac-address=fa:16:3e:f0:97:49 \
- --config core-interface-mac-address=fa:16:3e:d1:6a:34 \
- --config enable-hugepages=True
+ --config gnb-subnet=10.204.0.0/24 \
+ --config upf-mode=dpdk \
+ --config enable-hugepages=True \
+ --config access-interface-mac-address=FA:16:3E:1A:CD:B6 \
+ --config core-interface-mac-address=FA:16:3E:4F:F5:78
 ```
+
+kubectl get network-attachment-definition -A
+kubectl describe network-attachment-definition -n dpdk access-net
+
+
+
+
+

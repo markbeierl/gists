@@ -1,13 +1,20 @@
 {
 	"folders": [
 		{
-			"name": "charmed-5g",
+			"name": "Gists",
+			"path": "."
+		},
+		{
+			"name": "Charmed 5g Docs",
 			"path": "../../canonical/charmed-5g"
 		},
 		{
 			"name": "sdcore-amf-operator",
 			"path": "../../canonical/sdcore-amf-operator"
 		},
+		{
+			"path": "../../canonical/sdcore-gnbsim-operator"
+		}
 		{
 			"name": "sdcore-upf-operator",
 			"path": "../../canonical/sdcore-upf-operator"
@@ -27,11 +34,11 @@
 			"path": "../../canonical/../markbeierl/ueransim-rock"
 		},
 		{
-			"path": "."
+			"path": "../../omec-project/upf"
 		},
 		{
-			"path": "../../omec-project/upf"
-		}
+			"path": "../../omec-project/webconsole"
+		},
 	],
 	"settings": {}
 }

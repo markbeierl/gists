@@ -1,7 +1,8 @@
 # SDCore Dev VM
 
 ## Redo VM
-Sphinx docs
+
+### Python Stuff
 ```bash
 sudo apt install python3-pip python3.10-venv aspell
 ```
@@ -11,17 +12,24 @@ pip install tox
 export PATH=/home/ubuntu/.local/bin:$PATH
 ```
 
+### LXD Init
+```bash
+cat ~/git/GitHub/markbeierl/gists/lxd-preseed-dev.yaml | lxd init --preseed
+```
+
 LXD Bridge MTU
 ```bash
 lxc network set lxdbr0 bridge.mtu=1442
 ```
-Crafts
+
+### Crafts
 ```bash
 sudo snap install rockcraft --classic &
 sudo snap install snapcraft --classic &
 sudo snap install charmcraft --classic
 ```
-Microk8s Group
+
+### Microk8s Group
 ```bash
 sudo usermod -a -G snap_microk8s $USER
 ```
@@ -170,4 +178,31 @@ _Do not run on the same host or multus looses its mind_
 ```bash
 cd /ceph/git/GitHub/aligungr/UERANSIM
 sudo ./build/nr-ue -c config/free5gc-ue.yaml
+```
+
+
+## NMS
+
+```bash
+juju remove-application nms
+```
+
+Rebuild the rock
+```bash
+cd ~/git/GitHub/canonical/sdcore-nms/
+time rockcraft pack
+```
+
+On the control-plane, load the rock
+```bash
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-nms ~/git/GitHub/canonical/sdcore-nms/sdcore-nms_0.2.0_amd64.rock
+```
+
+On the juju controller, deploy the NMS
+```bash
+juju deploy sdcore-nms --channel=edge --resource sdcore-nms-image=mbeierl/sdcore-nms:0.2.0 nms
+juju relate webui:sdcore-management nms:sdcore-management
+juju integrate upf:fiveg_n4 nms:fiveg_n4
+juju integrate gnbsim:fiveg_gnb_identity nms:fiveg_gnb_identity
+
 ```
