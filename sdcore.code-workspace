@@ -5,8 +5,18 @@
 			"path": "."
 		},
 		{
+			"path": "../../omec-project/bess"
+		},
+		{
+			"path": "../../dpdk-stable"
+		},
+		{
 			"name": "Charmed 5g Docs",
 			"path": "../../canonical/charmed-5g"
+		},
+		{
+			"name": "kubernetes-charm-libraries",
+			"path": "../../canonical/kubernetes-charm-libraries"
 		},
 		{
 			"name": "sdcore-amf-operator",
@@ -40,5 +50,7 @@
 			"path": "../../omec-project/webconsole"
 		},
 	],
-	"settings": {}
+	"settings": {
+		"workbench.colorTheme": "Quiet Light"
+	}
 }

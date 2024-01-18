@@ -40,7 +40,7 @@ microceph_config:
 Install controller and first compute on Xeon
 
 ```bash
-sudo snap install openstack --channel 2023.1/stable
+sudo snap install openstack --channel 2023.2/edge
 sunbeam prepare-node-script | bash -x
 sunbeam cluster bootstrap --database single --role control --role compute --role storage -p ./sunbeam-preseed.yaml
 sunbeam configure -p ./sunbeam-preseed.yaml -o ./sunbeam-user.rc
@@ -55,7 +55,7 @@ sunbeam cluster add --name ryzen.lab
 ### Ryzen
 
 ```bash
-sudo snap install openstack --channel 2023.1
+sudo snap install openstack --channel 2023.2/edge
 sunbeam prepare-node-script | bash -x
 ```
 
@@ -119,6 +119,10 @@ subnet create --dhcp --gateway none --allocation-pool start=10.203.1.0,end=10.20
 
 network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1204 ran
 subnet create --dhcp --gateway none --allocation-pool start=10.204.1.0,end=10.204.1.254 --subnet-range 10.204.0.0/16 --network ran subnet.10.204.0.0 --host-route destination=10.202.0.0/16,gateway=10.204.0.1
+
+network create --share --external --provider-physical-network physnet1 --provider-network-type vlan --provider-segment 1205 vlan1205
+subnet create --dhcp --gateway 10.205.0.1 --dns-nameserver 10.0.0.2 --allocation-pool start=10.205.1.0,end=10.205.1.254 --subnet-range 10.205.0.0/16 --network vlan1205 subnet.10.205.0.0
+
 EOF
 ```
 
