@@ -2,6 +2,8 @@
 
 ## Huge pages
 
+On bare metal host
+
 ```bash
 sudo sed -i "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX='default_hugepagesz=1G hugepages=32'/" /etc/default/grub
 sudo update-grub
@@ -10,7 +12,7 @@ sudo init 6
 
 ## Microk8s
 
-```
+```bash
 sudo snap install microk8s --channel=1.27/stable --classic
 sudo microk8s enable hostpath-storage
 sudo microk8s enable metallb:10.201.0.201-10.201.0.201 &
@@ -28,31 +30,44 @@ juju bootstrap dpdk-cluster --config controller-service-type=loadbalancer dpdk
 juju add-model dpdk
 ```
 
+## For LXD VM
 
+For deploying UPF to a VM that will use LXD/Multipass (Mastering Tutorial), need to prepare with noiommu
 
-## Remove Config
+```console
+sudo lshw -c network -businfo
 
-Log into user plane and possibly remove ens4 and ens5 from netplan
-
+Bus info          Device      Class          Description
+========================================================
+pci@0000:05:00.0              network        Virtio network device
+virtio@10         enp5s0      network        Ethernet interface
+pci@0000:06:00.0              network        Virtio network device
+virtio@11         enp6s0      network        Ethernet interface
+pci@0000:07:00.0              network        Virtio network device
+pci@0000:08:00.0              network        Virtio network device
 ```
+
+Unbind the existing driver, set up vfio-pci
+
+```bash
 echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio-pci.conf
 sudo modprobe vfio-pci
 modprobe vfio enable_unsafe_noiommu_mode=1
 
 sudo apt install driverctl
 
-echo -n "0000:00:04.0" | sudo tee /sys/bus/pci/drivers/virtio-pci/unbind
-echo -n "0000:00:05.0" | sudo tee /sys/bus/pci/drivers/virtio-pci/unbind
+This part appears to be need to be done on every reboot
 
-## This needs to be done on every reboot?
+echo -n "0000:00:07.0" | sudo tee /sys/bus/pci/drivers/virtio-pci/unbind
+echo -n "0000:00:08.0" | sudo tee /sys/bus/pci/drivers/virtio-pci/unbind
 
 echo 1 | sudo tee  /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 
-sudo driverctl set-override 0000:00:04.0 vfio-pci
-sudo driverctl set-override 0000:00:05.0 vfio-pci
-
+sudo driverctl set-override 0000:00:07.0 vfio-pci
+sudo driverctl set-override 0000:00:08.0 vfio-pci
 ```
 
+The sriovdp configmap.  Check the ip link output to see which device is core and which is access.
 ```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -63,17 +78,19 @@ metadata:
 data:
   config.json: |
     {
-      "resourceList": [
+     "resourceList": [
         {
           "resourceName": "intel_sriov_vfio_access",
           "selectors": {
-            "pciAddresses": ["0000:00:04.0"]
+            "drivers": ["vfio-pci"],
+            "pciAddresses": ["0000:08:00.0"]
           }
         },
         {
           "resourceName": "intel_sriov_vfio_core",
           "selectors": {
-            "pciAddresses": ["0000:00:05.0"]
+            "drivers": ["vfio-pci"],
+            "pciAddresses": ["0000:07:00.0"]
           }
         }
       ]
@@ -81,11 +98,15 @@ data:
 EOF
 ```
 
+
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/sriov-network-device-plugin/v3.3/deployments/k8s-v1.16/sriovdp-daemonset.yaml
 ```
 
 kubectl get node  -o json | jq '.items[].status.allocatable'
+
+juju add-model user-plane user-plane-cluster
 
 
 ```bash
@@ -104,112 +125,51 @@ applications:
 EOF
 ```
 
-https://fast.dpdk.org/rel/dpdk-23.11.tar.xz
+### Bessd Rock build
 
-```
+```bash
 cd ~/git/GitHub/canonical/sdcore-upf-bess-rock/
 time rockcraft pack
+```
+On the UPF node (if running on Xeon)
+
+```bash
 sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
 ```
 
-## UPF Charm
+Charm deploy - with virtual lans, hardware checksum must be turned off
 
 ```bash
-juju deploy --trust ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
- --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
+juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
+ --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
  --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
- --config access-ip=10.202.0.10/24 \
- --config access-gateway-ip=10.202.0.1 \
- --config access-interface=access \
- --config core-ip=10.203.0.10/24 \
- --config core-gateway-ip=10.203.0.1 \
- --config core-interface=core \
- --config gnb-subnet=10.204.0.0/24
- ```
-
-```
-cd ~/git/GitHub/canonical/sdcore-upf-operator/
-time charmcraft pack
-juju deploy --trust ./sdcore-upf_ubuntu-22.04-amd64.charm \
- --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
- --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
- --config access-ip=10.202.0.10/24 \
- --config access-gateway-ip=10.202.0.1 \
- --config core-ip=10.203.0.10/24 \
- --config core-gateway-ip=10.203.0.1 \
- --config gnb-subnet=10.204.0.0/24 \
- --config upf-mode=dpdk \
- --config enable-hugepages=True \
- --config access-interface-mac-address=FA:16:3E:1A:CD:B6 \
- --config core-interface-mac-address=FA:16:3E:4F:F5:78
+ --config access-ip=10.202.0.10/24  \
+ --config access-gateway-ip=10.202.0.1  \
+ --config access-interface-mac-address=4a:32:4e:6a:55:ea  \
+ --config core-ip=10.203.0.10/24  \
+ --config core-gateway-ip=10.203.0.1  \
+ --config core-interface-mac-address=12:6b:c6:76:de:81  \
+ --config gnb-subnet=10.204.0.0/24  \
+ --config upf-mode=dpdk  \
+ --config enable-hugepages=True  \
+ --config enable-hw-checksum=False
 ```
 
-kubectl get network-attachment-definition -A
-kubectl describe network-attachment-definition -n dpdk access-net
-
-Partner Cloud
-```
-juju deploy --trust ./sdcore-upf_ubuntu-22.04-amd64.charm \
- --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
- --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
- --config access-ip=10.11.4.10/24 \
- --config access-gateway-ip=10.11.4.1 \
- --config core-ip=10.11.5.10/24 \
- --config core-gateway-ip=10.11.5.1 \
- --config gnb-subnet=10.11.6.0/24 \
- --config upf-mode=dpdk \
- --config enable-hugepages=True \
- --config access-interface-mac-address=02:5c:62:fc:dc:cc \
- --config core-interface-mac-address=0e:96:35:33:fe:2f
+In UPF model
+```bash
+juju offer user-plane.upf:fiveg_n4
 ```
 
-Openstack on PC7:
+```bash
+juju switch control-plane
+juju remove-saas upf
+juju consume user-plane.upf
+juju integrate upf:fiveg_n4 nms:fiveg_n4
 
-Netplan:
-/etc/netplan/60-vlan-config.yaml
-network:
-  ethernets:
-    enp129s0f0np0:
-      virtual-function-count: 8
-    enp129s0f0v0:
-      link: enp129s0f0np0
-      dhcp4: false
-      dhcp6: false
-  vlans:
-    vlan.2809:
-      id: 2809
-      link: enp129s0f0v0
-      addresses: [194.168.254.254/24]
+```
 
-sudo snap install openstack --channel 2023.1/stable
-sunbeam prepare-node-script | bash -x
-sunbeam cluster bootstrap --database single --role control --role compute -p ./sunbeam-preseed.yaml
-sunbeam configure -p ./sunbeam-preseed.yaml -o ./sunbeam-user.rc
-sunbeam openrc > sunbeam-admin.rc
 
-cat << EOF > sunbeam-preseed.yaml
-bootstrap:
-  management_cidr: 194.168.254.0/24
-addons:
-  metallb: 194.168.254.240-194.168.254.250
-user:
-  run_demo_setup: True
-  username: demo
-  password: demo
-  cidr: 192.168.250.0/24
-  nameservers: 194.168.254.254
-  security_group_rules: True
-  # Local or remote access to VMs
-  remote_access_location: remote
-external_network:
-  cidr: 194.168.254.0/24
-  start: 10.11.6.200/24
-  end: 10.11.6.239/24
-  network_type: flat
-  nic: enp129s0f1np1
-  gateway: 194.168.254.1
-EOF
-################################################################################
+## UPF Charm Bare Metal K8s + SR-IOV
 
 # Ryzen
 
@@ -240,9 +200,6 @@ juju add-model user-plane
 ```
 
 ## VF Configuration
-```bash
-
-```
 
 ```bash
 08:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  Physical #1
@@ -318,45 +275,13 @@ data:
 EOF
 ```
 
-```
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: sriovdp-config
-  namespace: kube-system
-data:
-  config.json: |
-    {
-     "resourceList": [
-        {
-          "resourceName": "intel_sriov_vfio_access",
-          "selectors": {
-            "drivers": ["vfio-pci"],
-            "pciAddresses": ["0000:08:00.0"]
-          }
-        },
-        {
-          "resourceName": "intel_sriov_vfio_core",
-          "selectors": {
-            "drivers": ["vfio-pci"],
-            "pciAddresses": ["0000:07:00.0"]
-          }
-        }
-      ]
-    }
-EOF
+On the UPF node (if running on Xeon)
+```bash
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ./sdcore-upf-bess_1.3_amd64.rock
 ```
 
-            "pciAddresses": [
-              "0000:09:10.3"
-            ]
-            "pciAddresses": [
-              "0000:09:11.3"
-            ]
-
-juju add-model user-plane user-plane-cluster
-
+Deploy locally built charm
+```bash
 juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
  --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
  --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
@@ -370,27 +295,10 @@ juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
  --config upf-mode=dpdk \
  --config enable-hugepages=True \
  --config enable-hw-checksum=True
-
-      access-gateway-ip: 10.202.0.1
-      access-interface: access
-      access-ip: 10.202.0.10/24
-      core-gateway-ip: 10.203.0.1
-      core-interface: core
-      core-ip: 10.203.0.10/24
-      gnb-subnet: 10.204.0.0/24
-      external-upf-hostname: upf.mgmt
+```
 
 
-
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285187    53 pmd.cc:70] 8 DPDK PMD ports have been recognized:
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285219    53 pmd.cc:94] DPDK port_id 0 (net_e1000_igb)   RXQ 16 TXQ 16  1c:fd:08:7c:71:2c  00000000:08:00.00 8086:10c9   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285230    53 pmd.cc:94] DPDK port_id 1 (net_e1000_igb_vf)   RXQ 2 TXQ 2  4e:75:6e:6d:7d:aa  00000000:09:10.01 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285239    53 pmd.cc:94] DPDK port_id 2 (net_e1000_igb_vf)   RXQ 2 TXQ 2  a2:eb:68:65:7f:15  00000000:09:10.03 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285248    53 pmd.cc:94] DPDK port_id 3 (net_e1000_igb_vf)   RXQ 2 TXQ 2  8a:a3:83:4c:05:d5  00000000:09:10.05 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285257    53 pmd.cc:94] DPDK port_id 4 (net_e1000_igb_vf)   RXQ 2 TXQ 2  06:66:0e:a0:75:6b  00000000:09:10.07 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285267    53 pmd.cc:94] DPDK port_id 5 (net_e1000_igb_vf)   RXQ 2 TXQ 2  02:c4:a5:98:9a:64  00000000:09:11.01 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285274    53 pmd.cc:94] DPDK port_id 6 (net_e1000_igb_vf)   RXQ 2 TXQ 2  e2:a0:d6:d3:eb:dd  00000000:09:11.03 8086:10ca   numa_node 0
-2024-01-10T14:16:35.285Z [bessd] I0110 14:16:35.285282    53 pmd.cc:94] DPDK port_id 7 (net_e1000_igb_vf)   RXQ 2 TXQ 2  56:67:6e:0d:85:ff  00000000:09:11.05 8086:10ca   numa_node 0
+# Ryzen - bare metal experimentation
 
 Without VLAN:
 
@@ -430,9 +338,6 @@ With VLAN=
 
 Thu Jan 11 09:27:57 PM UTC 2024
 + CNI_CONF='{"capabilities":{"mac":true},"cniVersion":"0.3.1","ipam":{"type":"static"},"name":"access-net","type":"vfioveth"}'
-
-
-sudo microk8s ctr image import --base-name docker.io/mbeierl/ueransim /home/ubuntu/git/GitHub/markbeierl/ueransim-rock/ueransim_3.2.6_amd64.rock
 
 
 curl -v ${WEBUI_IP}:5000/api/subscriber/imsi-208930100007487 \
@@ -501,7 +406,6 @@ curl -v ${WEBUI_IP}:5000/config/v1/network-slice/default \
   }
 }'
 
-sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ./sdcore-upf-bess_1.3_amd64.rock
 
 
 juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
