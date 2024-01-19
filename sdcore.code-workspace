@@ -23,8 +23,12 @@
 			"path": "../../canonical/sdcore-amf-operator"
 		},
 		{
+			"name": "sdcore-github-workflows",
+			"path": "../../canonical/sdcore-github-workflows"
+		},
+		{
 			"path": "../../canonical/sdcore-gnbsim-operator"
-		}
+		},
 		{
 			"name": "sdcore-upf-operator",
 			"path": "../../canonical/sdcore-upf-operator"
