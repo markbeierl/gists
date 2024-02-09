@@ -106,7 +106,12 @@ kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/sriov-ne
 
 kubectl get node  -o json | jq '.items[].status.allocatable'
 
+
+## Deploy the UPF
+
+```bash
 juju add-model user-plane user-plane-cluster
+```
 
 
 ```bash
@@ -165,9 +170,23 @@ juju switch control-plane
 juju remove-saas upf
 juju consume user-plane.upf
 juju integrate upf:fiveg_n4 nms:fiveg_n4
-
 ```
 
+### Testing without MAC address
+
+With MAC:
+
+vfioveth.log:
+```
+{"capabilities":{"mac":true},"cniVersion":"0.3.1","deviceID":"0000:07:00.0","ipam":{"type":"static"},"name":"core-net","pciBusID":"0000:07:00.0","runtimeConfig":{"mac":"12:6b:c6:76:de:81"},"type":"vfioveth"}
+```
+
+Without MAC:
+
+no device id. Something in K8s is filtering it out?
+```
+{"capabilities":{"mac":true},"cniVersion":"0.3.1","ipam":{"type":"static"},"name":"access-net","type":"vfioveth"}
+```
 
 ## UPF Charm Bare Metal K8s + SR-IOV
 
@@ -205,18 +224,18 @@ juju add-model user-plane
 08:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  Physical #1
 08:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  Physical #2
 09:10.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.1
-09:10.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.2
-09:10.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.3
-09:10.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.4
-09:10.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.5
-09:10.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.6
-09:10.6 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.7
-09:10.7 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.1
-09:11.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.2
-09:11.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.3
-09:11.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.4
-09:11.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.5
-09:11.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.6
+09:10.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.1
+09:10.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.2
+09:10.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.2
+09:10.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.3
+09:10.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.3
+09:10.6 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.4
+09:10.7 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.4
+09:11.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.5
+09:11.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.5
+09:11.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.6
+09:11.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.6
+09:11.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.7
 09:11.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.7
 ```
 
@@ -282,23 +301,28 @@ sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ./s
 
 Deploy locally built charm
 ```bash
-juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
- --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
- --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
- --config access-ip=10.202.0.10/24 \
- --config access-gateway-ip=10.202.0.1 \
- --config access-interface-mac-address=4a:32:4e:6a:55:ea \
- --config core-ip=10.203.0.10/24 \
- --config core-gateway-ip=10.203.0.1 \
- --config core-interface-mac-address=12:6b:c6:76:de:81 \
+juju deploy sdcore-upf-k8s upf --channel=1.3/edge \
+ --config access-ip=10.0.10.10/24 \
+ --config access-gateway-ip=10.0.10.1 \
+ --config access-interface-mac-address=be:ed:46:1a:8f:a3 \
+ --config core-ip=10.0.11.10/24 \
+ --config core-gateway-ip=10.0.11.1 \
+ --config core-interface-mac-address=3e:88:b3:2d:11:ff \
  --config gnb-subnet=10.204.0.0/24 \
  --config upf-mode=dpdk \
  --config enable-hugepages=True \
- --config enable-hw-checksum=True
+ --config enable-hw-checksum=False
 ```
 
 
 # Ryzen - bare metal experimentation
+
+Adding dpdk to router for testing
+
+```
+juju deploy ./sdcore-router-k8s_ubuntu-22.04-amd64.charm router --trust --channel=1.3/beta --resource router-image=ghcr.io/canonical/ubuntu-router:0.1 --config access-interface=access --config access-gateway-ip=10.0.11.10/24
+```
+
 
 Without VLAN:
 
@@ -407,6 +431,19 @@ curl -v ${WEBUI_IP}:5000/config/v1/network-slice/default \
 }'
 
 
+juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
+ --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
+ --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
+ --config access-gateway-ip=10.202.0.1 \
+ --config access-interface=access \
+ --config access-ip=10.202.0.10/24 \
+ --config core-gateway-ip=10.203.0.1 \
+ --config core-interface=core \
+ --config core-ip=10.203.0.10/24 \
+ --config gnb-subnet=10.204.0.0/24 \
+ --config external-upf-hostname=upf.mgmt
+
+
 
 juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
  --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
@@ -419,3 +456,39 @@ juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
  --config core-ip=10.203.0.10/24 \
  --config gnb-subnet=10.204.0.0/24 \
  --config external-upf-hostname=upf.mgmt
+
+
+
+## Juju SR-IOV Plugin
+
+juju deploy sriov-cni
+juju deploy sriov-network-device-plugin
+
+```bash
+juju config sriov-network-device-plugin resource-list='
+[
+  {
+    "resourceList": [
+      {
+        "resourceName": "intel_sriov_vfio_access",
+        "selectors": {
+          "drivers": ["vfio-pci"],
+          "pfNames": ["enp8s0f0"]
+        }
+      },
+      {
+        "resourceName": "intel_sriov_vfio_core",
+        "selectors": {
+          "drivers": ["vfio-pci"],
+          "pfNames": ["enp8s0f1"]
+        }
+      }
+    ]
+  }
+]'
+```
+Results in
+```
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x11eed64]
+```

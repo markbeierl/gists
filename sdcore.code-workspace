@@ -5,37 +5,92 @@
 			"path": "."
 		},
 		{
-			"path": "../../omec-project/bess"
-		},
-		{
-			"path": "../../dpdk-stable"
-		},
-		{
 			"name": "Charmed 5g Docs",
 			"path": "../../canonical/charmed-5g"
+		},
+		{
+			"name": "AMF",
+			"path": "../../canonical/sdcore-amf-k8s-operator"
+		},
+		{
+			"name": "AUSF",
+			"path": "../../canonical/sdcore-ausf-k8s-operator"
+		},
+		{
+			"name": "AUSF",
+			"path": "../../canonical/sdcore-ausf-k8s-operator"
+		},
+		{
+			"name": "gNB Sim",
+			"path": "../../canonical/sdcore-gnbsim-k8s-operator"
+		},
+		{
+			"name": "NMS",
+			"path": "../../canonical/sdcore-nms-k8s-operator"
+		},
+		{
+			"name": "NRF",
+			"path": "../../canonical/sdcore-nrf-k8s-operator"
+		},
+		{
+			"name": "NSSF",
+			"path": "../../canonical/sdcore-nssf-k8s-operator"
+		},
+		{
+			"name": "PCF",
+			"path": "../../canonical/sdcore-pcf-k8s-operator"
+		},
+		{
+			"name": "Router",
+			"path": "../../canonical/sdcore-router-k8s-operator"
+		},
+		{
+			"name": "SMF",
+			"path": "../../canonical/sdcore-smf-k8s-operator"
+		},
+		{
+			"name": "UDM",
+			"path": "../../canonical/sdcore-udm-k8s-operator"
+		},
+		{
+			"name": "UDR",
+			"path": "../../canonical/sdcore-udr-k8s-operator"
+		},
+		{
+			"name": "UPF",
+			"path": "../../canonical/sdcore-upf-k8s-operator"
+		},
+		{
+			"name": "WebUI",
+			"path": "../../canonical/sdcore-webui-k8s-operator"
+		},
+		{
+			"name": "UPF Rock",
+			"path": "../../canonical/sdcore-upf-bess-rock"
+		},
+		{
+			"name": "Tests",
+			"path": "../../canonical/sdcore-tests"
+		},
+		{
+			"name": "Bundles",
+			"path": "../../canonical/sdcore-bundles"
 		},
 		{
 			"name": "kubernetes-charm-libraries",
 			"path": "../../canonical/kubernetes-charm-libraries"
 		},
 		{
-			"name": "sdcore-amf-operator",
-			"path": "../../canonical/sdcore-amf-operator"
+			"name": "OMEC bess",
+			"path": "../../omec-project/bess"
 		},
 		{
-			"name": "sdcore-github-workflows",
-			"path": "../../canonical/sdcore-github-workflows"
+			"name": "OMEC UPF",
+			"path": "../../omec-project/upf"
 		},
 		{
-			"path": "../../canonical/sdcore-gnbsim-operator"
-		},
-		{
-			"name": "sdcore-upf-operator",
-			"path": "../../canonical/sdcore-upf-operator"
-		},
-		{
-			"name": "sdcore-upf-bess-rock",
-			"path": "../../canonical/sdcore-upf-bess-rock"
+			"name": "OMEC webconsole",
+			"path": "../../omec-project/webconsole"
 		},
 		{
 			"name": "UERANSIM",
@@ -46,12 +101,6 @@
 		},
 		{
 			"path": "../../canonical/../markbeierl/ueransim-rock"
-		},
-		{
-			"path": "../../omec-project/upf"
-		},
-		{
-			"path": "../../omec-project/webconsole"
 		},
 	],
 	"settings": {
