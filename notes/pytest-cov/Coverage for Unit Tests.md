@@ -2,6 +2,13 @@
 
 In the project's .vscode directory, add the launch.json and settings.json as follows.  Also need to `pip install pytest-cov`
 
+```bash
+. .tox/unit/bin/activate
+pip install pytest-cov
+```
+
+Copy the .env file into the project's root directory.
+
 `launch.json`: this is only needed for debugging a unit test without having the coverage interfere. Without this, breakpoints will not work.
 ```json
 {

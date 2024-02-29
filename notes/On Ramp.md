@@ -43,3 +43,7 @@ make aether-5gc-install
 make aether-gnbsim-install
 ```
 
+```bash
+make aether-gnbsim-run
+docker exec -it gnbsim-1 cat summary.log
+```

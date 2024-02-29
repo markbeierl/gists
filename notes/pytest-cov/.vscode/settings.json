@@ -8,3 +8,4 @@
         "--cov-report=xml",
         "tests/"
     ]
+}
