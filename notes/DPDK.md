@@ -492,3 +492,86 @@ Results in
 panic: runtime error: invalid memory address or nil pointer dereference
 [signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x11eed64]
 ```
+
+-----------------------------------------------------------------------------
+# DPDK only in a User Plane VM
+
+Launched my regular User plane VM, installed classic microk8s on it.
+
+```bash
+echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio-pci.conf
+sudo modprobe vfio-pci
+sudo modprobe vfio enable_unsafe_noiommu_mode=1
+
+sudo apt install driverctl
+sudo driverctl set-override 0000:00:04.0 vfio-pci
+sudo driverctl set-override 0000:00:05.0 vfio-pci
+
+echo 1 | sudo tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
+
+```
+
+Definitely need the newer one:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/sriov-network-device-plugin/v3.6.2/deployments/sriovdp-daemonset.yaml
+```
+
+```bash
+sudo mkdir -p /opt/cni/bin
+sudo wget -O /opt/cni/bin/vfioveth https://raw.githubusercontent.com/opencord/omec-cni/master/vfioveth
+sudo chmod +x /opt/cni/bin/vfioveth
+```
+
+The sriovdp configmap.  Check the ip link output to see which device is core and which is access.
+
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sriovdp-config
+  namespace: kube-system
+data:
+  config.json: |
+    {
+     "resourceList": [
+        {
+          "resourceName": "intel_sriov_vfio_access",
+          "selectors": {
+            "pciAddresses": ["0000:00:04.0"]
+          }
+        },
+        {
+          "resourceName": "intel_sriov_vfio_core",
+          "selectors": {
+            "pciAddresses": ["0000:00:05.0"]
+          }
+        }
+      ]
+    }
+EOF
+```
+
+```bash
+kubectl get node  -o json | jq '.items[].status.allocatable'
+```
+
+```bash
+cat << EOF > upf-dpdk.yaml
+applications:
+  upf:
+    options:
+      access-gateway-ip: 10.202.0.1
+      access-interface-mac-address: fa:16:3e:c4:65:0a
+      access-ip: 10.202.0.10/24
+      core-gateway-ip: 10.203.0.1
+      core-interface-mac-address: fa:16:3e:20:3e:2e
+      core-ip: 10.203.0.10/24
+      external-upf-hostname: upf.mgmt
+      gnb-subnet: 10.204.0.0/16
+      cni-type: vfioveth
+      enable-hw-checksum: false
+      upf-mode: dpdk
+EOF
+```
