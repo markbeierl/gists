@@ -182,6 +182,16 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.101
 openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.102 --enable --project ${PROJECT} --network ran ue-2.ran
 ```
 
+#### Ports for Core Services
+```bash
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.3.1 --enable --project ${PROJECT} --network management service-1.mgmt
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.3.2 --enable --project ${PROJECT} --network management service-2.mgmt
+openstack port create --disable-port-security --fixed-ip ip-address=10.203.3.1 --enable --project ${PROJECT} --network core service-1.core
+openstack port create --disable-port-security --fixed-ip ip-address=10.203.3.2 --enable --project ${PROJECT} --network core service-2.core
+```
+
+
+
 ### Flavours
 
 ```bash
@@ -237,7 +247,7 @@ echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
 sudo sysctl -w net.ipv4.ip_forward=1
 ```
 
-### Service VMs
+### SD-Core VMs
 
 ```bash
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor juju-controller --image ubuntu --nic port-id=juju-controller.mgmt juju-controller&
@@ -247,6 +257,13 @@ openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavo
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=ueransim.mgmt --nic port-id=ueransim.ran ransim&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-1.mgmt --nic port-id=ue-1.ran ue-1&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-2.mgmt --nic port-id=ue-2.ran ue-2
+```
+
+### Core Service VMs
+
+```bash
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=service-1.mgmt --nic port-id=service-1.core service-1&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=service-2.mgmt --nic port-id=service-2.core service-2
 ```
 
 # Bootstrapping
