@@ -148,11 +148,12 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.201.11.25
 #### Service VMs
 
 ```bash
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.10 --enable --project ${PROJECT} --network management juju-controller.mgmt&
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.11 --enable --project ${PROJECT} --network management control-plane.mgmt&
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.12 --enable --project ${PROJECT} --network management user-plane.mgmt&
-openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.13 --enable --project ${PROJECT} --network management gnbsim.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.101 --enable --project ${PROJECT} --network management control-plane.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.102 --enable --project ${PROJECT} --network management user-plane.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.103 --enable --project ${PROJECT} --network management gnbsim.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.104 --enable --project ${PROJECT} --network management juju-controller.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.14 --enable --project ${PROJECT} --network management ueransim.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.15 --enable --project ${PROJECT} --network management radio.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.2.1 --enable --project ${PROJECT} --network management ue-1.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.2.2 --enable --project ${PROJECT} --network management ue-2.mgmt
 ```
@@ -174,6 +175,7 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.2 -
 
 ```bash
 openstack port create --disable-port-security --fixed-ip ip-address=10.204.0.3 --enable --project ${PROJECT} --network ran ueransim.ran
+openstack port create --disable-port-security --fixed-ip ip-address=10.202.0.100 --enable --project ${PROJECT} --network access radio.ran
 ```
 
 #### Ports for UE
@@ -255,6 +257,7 @@ openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavo
 openstack server create --availability-zone ryzen --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor gnbsim --image ubuntu --nic port-id=gnbsim.mgmt --nic port-id=gnbsim.ran gnbsim&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=ueransim.mgmt --nic port-id=ueransim.ran ransim&
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor ransim --image ubuntu --nic port-id=radio.mgmt --nic port-id=radio.ran radio&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-1.mgmt --nic port-id=ue-1.ran ue-1&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor uesim --image ubuntu --nic port-id=ue-2.mgmt --nic port-id=ue-2.ran ue-2
 ```
@@ -263,7 +266,16 @@ openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavo
 
 ```bash
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=service-1.mgmt --nic port-id=service-1.core service-1&
-openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=service-2.mgmt --nic port-id=service-2.core service-2
+openstack server create --availability-zone ryzen  --key-name ${KEY_NAME} --flavor router --image ubuntu --nic port-id=service-2.mgmt --nic port-id=service-2.core service-2
+```
+
+Install some service tools on the service VMs: `ssh service-1.mgmt`
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y apache2 iperf iperf3
+sudo init 6
 ```
 
 # Bootstrapping
