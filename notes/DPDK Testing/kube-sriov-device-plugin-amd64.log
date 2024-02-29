@@ -1,0 +1,55 @@
+I0229 19:26:36.992047       1 manager.go:57] Using Kubelet Plugin Registry Mode
+I0229 19:26:36.992558       1 main.go:46] resource manager reading configs
+I0229 19:26:36.992585       1 manager.go:86] raw ResourceList: {
+ "resourceList": [
+    {
+      "resourceName": "intel_sriov_vfio_access",
+      "selectors": {
+        "pciAddresses": ["0000:00:04.0"]
+      }
+    },
+    {
+      "resourceName": "intel_sriov_vfio_core",
+      "selectors": {
+        "pciAddresses": ["0000:00:05.0"]
+      }
+    }
+  ]
+}
+I0229 19:26:36.992672       1 factory.go:211] *types.NetDeviceSelectors for resource intel_sriov_vfio_access is [0xc000393d40]
+I0229 19:26:36.992684       1 factory.go:211] *types.NetDeviceSelectors for resource intel_sriov_vfio_core is [0xc0003fc120]
+I0229 19:26:36.992687       1 manager.go:106] unmarshalled ResourceList: [{ResourcePrefix: ResourceName:intel_sriov_vfio_access DeviceType:netDevice ExcludeTopology:false Selectors:0xc0003ec798 AdditionalInfo:map[] SelectorObjs:[0xc000393d40]} {ResourcePrefix: ResourceName:intel_sriov_vfio_core DeviceType:netDevice ExcludeTopology:false Selectors:0xc0003ec7b0 AdditionalInfo:map[] SelectorObjs:[0xc0003fc120]}]
+I0229 19:26:36.992718       1 manager.go:217] validating resource name "intel.com/intel_sriov_vfio_access"
+I0229 19:26:36.992727       1 manager.go:217] validating resource name "intel.com/intel_sriov_vfio_core"
+I0229 19:26:36.992729       1 main.go:62] Discovering host devices
+I0229 19:26:37.044397       1 auxNetDeviceProvider.go:84] auxnetdevice AddTargetDevices(): device found: 0000:00:03.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.045967       1 auxNetDeviceProvider.go:84] auxnetdevice AddTargetDevices(): device found: 0000:00:04.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.045973       1 auxNetDeviceProvider.go:84] auxnetdevice AddTargetDevices(): device found: 0000:00:05.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.045979       1 netDeviceProvider.go:67] netdevice AddTargetDevices(): device found: 0000:00:03.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.046011       1 netDeviceProvider.go:67] netdevice AddTargetDevices(): device found: 0000:00:04.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.046031       1 netDeviceProvider.go:67] netdevice AddTargetDevices(): device found: 0000:00:05.0	02          	Red Hat, Inc.       	Virtio network device                   
+I0229 19:26:37.046047       1 main.go:68] Initializing resource servers
+I0229 19:26:37.046053       1 manager.go:117] number of config: 2
+I0229 19:26:37.046058       1 manager.go:121] Creating new ResourcePool: intel_sriov_vfio_access
+I0229 19:26:37.046062       1 manager.go:122] DeviceType: netDevice
+I0229 19:26:37.046238       1 manager.go:138] initServers(): selector index 0 will register 1 devices
+I0229 19:26:37.046250       1 factory.go:124] device added: [identifier: 0000:00:04.0, vendor: 1af4, device: 1000, driver: virtio-pci]
+I0229 19:26:37.046274       1 manager.go:156] New resource server is created for intel_sriov_vfio_access ResourcePool
+I0229 19:26:37.046280       1 manager.go:121] Creating new ResourcePool: intel_sriov_vfio_core
+I0229 19:26:37.046283       1 manager.go:122] DeviceType: netDevice
+I0229 19:26:37.046442       1 manager.go:138] initServers(): selector index 0 will register 1 devices
+I0229 19:26:37.046453       1 factory.go:124] device added: [identifier: 0000:00:05.0, vendor: 1af4, device: 1000, driver: virtio-pci]
+I0229 19:26:37.046463       1 manager.go:156] New resource server is created for intel_sriov_vfio_core ResourcePool
+I0229 19:26:37.046467       1 main.go:74] Starting all servers...
+I0229 19:26:37.046895       1 server.go:255] starting intel_sriov_vfio_access device plugin endpoint at: intel.com_intel_sriov_vfio_access.sock
+I0229 19:26:37.050719       1 server.go:283] intel_sriov_vfio_access device plugin endpoint started serving
+I0229 19:26:37.050970       1 server.go:255] starting intel_sriov_vfio_core device plugin endpoint at: intel.com_intel_sriov_vfio_core.sock
+I0229 19:26:37.051459       1 server.go:283] intel_sriov_vfio_core device plugin endpoint started serving
+I0229 19:26:37.051533       1 main.go:79] All servers started.
+I0229 19:26:37.051542       1 main.go:80] Listening for term signals
+I0229 19:26:37.509254       1 server.go:117] Plugin: intel.com_intel_sriov_vfio_access.sock gets registered successfully at Kubelet
+I0229 19:26:37.509379       1 server.go:158] ListAndWatch(intel_sriov_vfio_access) invoked
+I0229 19:26:37.509443       1 server.go:171] ListAndWatch(intel_sriov_vfio_access): send devices &ListAndWatchResponse{Devices:[]*Device{&Device{ID:0000:00:04.0,Health:Healthy,Topology:nil,},},}
+I0229 19:26:37.510205       1 server.go:158] ListAndWatch(intel_sriov_vfio_core) invoked
+I0229 19:26:37.510236       1 server.go:171] ListAndWatch(intel_sriov_vfio_core): send devices &ListAndWatchResponse{Devices:[]*Device{&Device{ID:0000:00:05.0,Health:Healthy,Topology:nil,},},}
+I0229 19:26:37.510230       1 server.go:117] Plugin: intel.com_intel_sriov_vfio_core.sock gets registered successfully at Kubelet
