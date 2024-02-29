@@ -2,9 +2,16 @@
 
 How I use vscode to debug my charms
 
-## Charm setup
+## Env Setup
 
-Either
+```bash
+sudo snap install jhack
+sudo snap connect jhack:dot-local-share-juju snapd
+```
+
+## Charm Setup
+
+Either:
 
 1. Update the requirements.txt of the charm to add debugpy, or
 1. Log into the running charm and `python3 -m pip install --upgrade debugpy`
@@ -17,6 +24,8 @@ Then in the charm code, add
         debugpy.wait_for_client()
         debugpy.breakpoint()
 ```
+
+jhack sync src
 
 inotifywait -e modify,create,delete -r src && rsync -avt src pc7:sdcore-upf-operator
 
