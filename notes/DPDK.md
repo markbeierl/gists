@@ -498,16 +498,30 @@ panic: runtime error: invalid memory address or nil pointer dereference
 
 Launched my regular User plane VM, installed classic microk8s on it.
 
+This is what lshw looks like before `driverctl set-override`:
+
+```bash
+ubuntu@user-plane:~$ sudo lshw -c network -businfo
+Bus info          Device      Class          Description
+========================================================
+pci@0000:00:03.0              network        Virtio network device
+virtio@0          ens3        network        Ethernet interface
+pci@0000:00:04.0              network        Virtio network device
+virtio@1          ens4        network        Ethernet interface
+pci@0000:00:05.0              network        Virtio network device
+virtio@2          ens5        network        Ethernet interface
+```
+
 ```bash
 echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio-pci.conf
 sudo modprobe vfio-pci
 sudo modprobe vfio enable_unsafe_noiommu_mode=1
+echo 1 | sudo tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 
 sudo apt install driverctl
+
 sudo driverctl set-override 0000:00:04.0 vfio-pci
 sudo driverctl set-override 0000:00:05.0 vfio-pci
-
-echo 1 | sudo tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 
 ```
 
