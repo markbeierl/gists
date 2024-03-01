@@ -436,7 +436,7 @@ cat << EOF > upf-dpdk.yaml
 applications:
   upf:
     resources:
-      image: bessd-image=mbeierl/sdcore-upf-bess:1.3
+      bessd-image: mbeierl/sdcore-upf-bess:1.3
     options:
       access-gateway-ip: 10.202.0.1
       access-interface-mac-address: fa:16:3e:c4:65:0a
