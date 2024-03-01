@@ -82,7 +82,7 @@ curl -v ${WEBUI_IP}:5000/config/v1/device-group/DG-2 \
     "site-info": "domain2",
     "ip-domain-name": "pool2",
     "ip-domain-expanded": {
-        "dnn": "internet",
+        "dnn": "internet2",
         "ue-ip-pool": "172.2.0.0/16",
         "dns-primary": "8.8.8.8",
         "mtu": 1348,

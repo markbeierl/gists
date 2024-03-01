@@ -452,3 +452,12 @@ applications:
 EOF
 ```
 
+```bash
+juju integrate amf:logging grafana-agent-k8s
+juju integrate ausf:logging grafana-agent-k8s
+juju integrate smf:logging grafana-agent-k8s
+```
+
+```bash
+juju integrate upf:logging grafana-agent-k8s
+```
