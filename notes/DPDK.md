@@ -514,8 +514,11 @@ virtio@2          ens5        network        Ethernet interface
 
 ```bash
 echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio-pci.conf
+echo "options vfio enable_unsafe_noiommu_mode=1" | sudo tee /etc/modprobe.d/vfio-noiommu.conf
+
 sudo modprobe vfio-pci
 sudo modprobe vfio enable_unsafe_noiommu_mode=1
+cat /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 echo 1 | sudo tee /sys/module/vfio/parameters/enable_unsafe_noiommu_mode
 
 sudo apt install driverctl
