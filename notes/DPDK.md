@@ -225,7 +225,7 @@ time rockcraft pack
 On the user-plane vm, load the rock into microk8s:
 
 ```bash
-sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3.1_amd64.rock
 ```
 
 Deployment on the juju-controller:
