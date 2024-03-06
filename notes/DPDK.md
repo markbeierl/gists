@@ -217,6 +217,20 @@ kubectl get node  -o json | jq '.items[].status.allocatable'
 Trying the new DPDK from Ghislain:
 
 ```bash
+cd ~/git/GitHub/canonical/sdcore-upf-bess-rock
+gh checkout pr 15
+time rockcraft pack
+```
+
+On the user-plane vm, load the rock into microk8s:
+
+```bash
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
+```
+
+Deployment on the juju-controller:
+
+```bash
 cat << EOF > upf-dpdk.yaml
 applications:
   upf:
@@ -238,13 +252,7 @@ EOF
 ```
 
 ```bash
-juju integrate amf:logging grafana-agent-k8s
-juju integrate ausf:logging grafana-agent-k8s
-juju integrate smf:logging grafana-agent-k8s
-```
-
-```bash
-juju integrate upf:logging grafana-agent-k8s
+for app in amf ausf nms nrf nssf pcf smf udm udr webui ; do juju integrate ${app}:logging grafana-agent-k8s ; done
 ```
 
 On the gnbsim VM, run UERANSIM and use:
