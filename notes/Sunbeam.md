@@ -51,9 +51,7 @@ sunbeam cluster add --name ryzen.lab
 ```
 I think I found a bug in configure, 2023.02/edge.
 
-
-
-I have tailscale installed
+I have tailscale installed and it presents as an interface in `ip link`
 ```
 2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
     link/ether 90:b1:1c:a2:69:a8 brd ff:ff:ff:ff:ff:ff
@@ -68,6 +66,56 @@ I have tailscale installed
     link/none
 ```
 
+Running `sunbeam configure deployment -o ./sunbeam-user.rc` gives this error
+
+```
+20:41:09,970 sunbeam.utils DEBUG Skipping lo it is virtual
+20:41:09,973 sunbeam.utils DEBUG Skipping eno1 it is configured
+20:41:09,975 sunbeam.utils DEBUG Found nic enp8s0
+20:41:09,977 sunbeam.utils DEBUG Skipping vlan.1205 it is virtual
+20:41:09,978 sunbeam.utils DEBUG Skipping mgmt.1201 it is virtual
+20:41:09,980 sunbeam.utils DEBUG 17
+Traceback (most recent call last):
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/utils.py", line 279, in __call__
+    return self.main(*args, **kwargs)
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/core.py", line 1055, in main
+    rv = self.invoke(ctx)
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/core.py", line 1657, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/core.py", line 1657, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/core.py", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/core.py", line 760, in invoke
+    return __callback(*args, **kwargs)
+  File "/snap/openstack/435/lib/python3.10/site-packages/click/decorators.py", line 26, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/provider/local/commands.py", line 805, in configure_cmd
+    run_plan(plan, console)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/jobs/common.py", line 255, in run_plan
+    step.prompt(console)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/provider/local/steps.py", line 183, in prompt
+    self.nics[self.names[0]] = self.prompt_for_nic()
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/provider/local/steps.py", line 146, in prompt_for_nic
+    nic = local_hypervisor_bank.nic.ask()
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/jobs/questions.py", line 153, in ask
+    self.answer = self.question_function(
+  File "/snap/openstack/435/lib/python3.10/site-packages/rich/prompt.py", line 141, in ask
+    return _prompt(default=default, stream=stream)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/provider/local/steps.py", line 69, in __call__
+    self.choices = utils.get_free_nics(include_configured=False)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/utils.py", line 226, in get_free_nics
+    macs = get_nic_macs(nic)
+  File "/snap/openstack/435/lib/python3.10/site-packages/sunbeam/utils.py", line 193, in get_nic_macs
+    return sorted([a["addr"] for a in addrs[netifaces.AF_LINK]])
+KeyError: 17
+20:41:09,983 sunbeam.utils WARNING An unexpected error has occurred. Please run 'sunbeam inspect' to generate an inspection report.
+20:41:09,983 sunbeam.utils ERROR Error: 17
+```
+
+Uninstalling tailscale allowed it to proceed.
+
+Shall I report this as a bug? If so, where is the best place?
 
 ### Ryzen
 
