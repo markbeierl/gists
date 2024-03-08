@@ -1,5 +1,13 @@
 # DPDK
 
+# UPF Charm Bare Metal K8s + SR-IOV
+
+## Ryzen Host
+
+```bash
+sudo apt install -y driverctl net-tools
+```
+
 ## Huge pages
 
 On bare metal host
@@ -8,42 +16,6 @@ On bare metal host
 sudo sed -i "s/GRUB_CMDLINE_LINUX=.*/GRUB_CMDLINE_LINUX='default_hugepagesz=1G hugepages=32'/" /etc/default/grub
 sudo update-grub
 sudo init 6
-```
-
-## Microk8s
-
-```bash
-sudo snap install microk8s --channel=1.29/stable --classic
-sudo microk8s enable hostpath-storage
-sudo microk8s enable metallb:10.201.0.201-10.201.0.201 &
-sudo microk8s addons repo add community \
-    https://github.com/canonical/microk8s-community-addons \
-    --reference feat/strict-fix-multus
-sudo microk8s enable multus
-```
-
-### Testing without MAC address
-
-With MAC:
-
-vfioveth.log:
-```
-{"capabilities":{"mac":true},"cniVersion":"0.3.1","deviceID":"0000:07:00.0","ipam":{"type":"static"},"name":"core-net","pciBusID":"0000:07:00.0","runtimeConfig":{"mac":"12:6b:c6:76:de:81"},"type":"vfioveth"}
-```
-
-Without MAC:
-
-no device id. Something in K8s is filtering it out?
-```
-{"capabilities":{"mac":true},"cniVersion":"0.3.1","ipam":{"type":"static"},"name":"access-net","type":"vfioveth"}
-```
-
-# UPF Charm Bare Metal K8s + SR-IOV
-
-## Ryzen Host
-
-```bash
-sudo apt install -y driverctl net-tools
 ```
 
 ## Microk8s
@@ -63,8 +35,8 @@ sudo microk8s.config > user-plane-cluster.yaml
 For reference
 
 ```bash
-08:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  Physical #1
-08:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  Physical #2
+08:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  PF #1
+08:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  PF #2
 09:10.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.1
 09:10.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.1
 09:10.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.2
