@@ -54,24 +54,40 @@ For reference
 ```
 
 ```bash
-sudo driverctl set-override 0000:09:10.0 vfio-pci
-sudo driverctl set-override 0000:09:10.1 vfio-pci
-sudo driverctl set-override 0000:09:10.2 vfio-pci
-sudo driverctl set-override 0000:09:10.3 vfio-pci
-sudo driverctl set-override 0000:09:10.4 vfio-pci
-sudo driverctl set-override 0000:09:10.5 vfio-pci
-sudo driverctl set-override 0000:09:10.6 vfio-pci
-
-sudo driverctl set-override 0000:09:10.7 vfio-pci
-sudo driverctl set-override 0000:09:11.0 vfio-pci
-sudo driverctl set-override 0000:09:11.1 vfio-pci
-sudo driverctl set-override 0000:09:11.2 vfio-pci
-sudo driverctl set-override 0000:09:11.3 vfio-pci
-sudo driverctl set-override 0000:09:11.4 vfio-pci
-sudo driverctl set-override 0000:09:11.5 vfio-pci
+cat << EOF | sudo tee /etc/rc.local
+#!/bin/bash
+driverctl set-override 0000:09:10.0 vfio-pci
+driverctl set-override 0000:09:10.1 vfio-pci
+driverctl set-override 0000:09:10.2 vfio-pci
+driverctl set-override 0000:09:10.3 vfio-pci
+driverctl set-override 0000:09:10.4 vfio-pci
+driverctl set-override 0000:09:10.5 vfio-pci
+driverctl set-override 0000:09:10.6 vfio-pci
+driverctl set-override 0000:09:10.7 vfio-pci
+driverctl set-override 0000:09:11.0 vfio-pci
+driverctl set-override 0000:09:11.1 vfio-pci
+driverctl set-override 0000:09:11.2 vfio-pci
+driverctl set-override 0000:09:11.3 vfio-pci
+driverctl set-override 0000:09:11.4 vfio-pci
+driverctl set-override 0000:09:11.5 vfio-pci
+EOF
 ```
 
-## Config Map
+```bash
+sudo chmod +x /etc/rc.local
+sudo /etc/rc.local
+sudo sudo driverctl list-devices
+```
+
+## SR-IOV K8s Setup
+
+Download the ONF CNI script
+
+```bash
+sudo mkdir -p /opt/cni/bin
+sudo wget -O /opt/cni/bin/vfioveth https://raw.githubusercontent.com/opencord/omec-cni/master/vfioveth
+sudo chmod +x /opt/cni/bin/vfioveth
+```
 
 Select all the VFs on the first PF for access, and all the VFs on the second PF as core.
 
@@ -104,6 +120,50 @@ data:
     }
 EOF
 ```
+
+Install the newer daemonset.
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/k8snetworkplumbingwg/sriov-network-device-plugin/v3.6.2/deployments/sriovdp-daemonset.yaml
+```
+
+Verify they got loaded
+```bash
+kubectl get node -o json | jq '.items[].status.allocatable'
+```
+```json
+{
+  "cpu": "16",
+  "ephemeral-storage": "513888512Ki",
+  "hugepages-1Gi": "4Gi",
+  "hugepages-2Mi": "2Gi",
+  "intel.com/intel_sriov_vfio_access": "7",
+  "intel.com/intel_sriov_vfio_core": "7",
+  "memory": "59347368Ki",
+  "pods": "110"
+}
+```
+
+Can also check sriovdp logs:
+
+```bash
+kubectl logs -n kube-system kube-sriov-device-plugin-amd64-
+```
+```
+I0308 22:37:45.329946       1 manager.go:138] initServers(): selector index 0 will register 7 devices
+I0308 22:37:45.329954       1 factory.go:124] device added: [identifier: 0000:09:10.1, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329959       1 factory.go:124] device added: [identifier: 0000:09:10.3, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329962       1 factory.go:124] device added: [identifier: 0000:09:10.5, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329965       1 factory.go:124] device added: [identifier: 0000:09:10.7, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329968       1 factory.go:124] device added: [identifier: 0000:09:11.1, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329971       1 factory.go:124] device added: [identifier: 0000:09:11.3, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329974       1 factory.go:124] device added: [identifier: 0000:09:11.5, vendor: 8086, device: 10ca, driver: vfio-pci]
+I0308 22:37:45.329981       1 manager.go:156] New resource server is created for intel_sriov_vfio_core ResourcePool
+```
+
+## SD-Core Control Plane Setup
+
+Followed the tutorial using [VMs in OpenStack](https://github.com/markbeierl/gists/blob/main/notes/Sunbeam.md#networking-for-sd-core).
 
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
