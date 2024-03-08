@@ -4,12 +4,17 @@
 
 ### Xeon
 
+`sunbeam-manifest.yaml`
+```yaml
+deployment:
+  bootstrap:
+    management_cidr: 10.0.0.0/16
+  addons:
+    metallb: 10.0.4.0-10.0.4.10
+```
+
 `Sunbeam-preseed.yaml`
 ```yaml
-bootstrap:
-  management_cidr: 10.0.0.0/16
-addons:
-  metallb: 10.0.4.0-10.0.4.10
 user:
   run_demo_setup: True
   username: demo
@@ -17,23 +22,16 @@ user:
   cidr: 192.168.250.0/24
   nameservers: 10.0.0.2
   security_group_rules: True
-  # Local or remote access to VMs
   remote_access_location: remote
 external_network:
   cidr: 10.0.0.0/16
-  # Start of IP allocation range for external network
   start: 10.0.4.129
-  # End of IP allocation range for external network
   end: 10.0.4.254
-  # Network type for access to external network
   network_type: flat
-  # segmentation_id: 101
   nic: enp8s0
   gateway: 10.0.0.1
-# MicroCeph config
 microceph_config:
   xeon.lab:
-    # Disks to attach to MicroCeph
     osd_devices: /dev/disk/by-id/nvme-nvme.126f-504c3233303732305953423235364730303035-54696d657465632033355454465036504349452d32353647-00000001
 ```
 
@@ -42,7 +40,7 @@ Install controller and first compute on Xeon
 ```bash
 sudo snap install openstack --channel 2023.2/edge
 sunbeam prepare-node-script | bash -x
-sunbeam cluster bootstrap --database single --role control --role compute --role storage -p ./sunbeam-preseed.yaml
+sunbeam cluster bootstrap --database single --role control --role compute --manifest ~/sunbeam-manifest.yaml
 sunbeam configure -p ./sunbeam-preseed.yaml -o ./sunbeam-user.rc
 sunbeam openrc > sunbeam-admin.rc
 ```
