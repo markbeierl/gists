@@ -231,8 +231,7 @@ iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE -s 10.203.0.0/16
 EOF
 sudo chmod +x /etc/rc.local
 sudo /etc/rc.local
-echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
-sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -w net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
 ```
 
 ### Access/RAN Router
@@ -243,8 +242,7 @@ openstack server create --availability-zone xeon --key-name ${KEY_NAME} --flavor
 - Set up IP forwarding
 ```bash
 ssh ubuntu@ran-access-router.mgmt
-echo net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
-sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -w net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
 ```
 
 ### SD-Core VMs
@@ -272,7 +270,7 @@ Install some service tools on the service VMs: `ssh service-1.mgmt`
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y apache2 iperf iperf3
+sudo apt install -y apache2 iperf iperf3 libsctp1
 sudo init 6
 ```
 
@@ -285,7 +283,7 @@ scp ~/.ssh/id_rsa ubuntu@control-plane.mgmt:.ssh/
 scp ~/.ssh/id_rsa ubuntu@gnbsim.mgmt:.ssh/
 scp ~/.ssh/id_rsa ubuntu@juju-controller.mgmt:.ssh/
 
-for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ; do
+for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ueransim.mgmt ; do
   setup-ceph.sh $VM
 done
 ```
