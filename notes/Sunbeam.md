@@ -49,6 +49,25 @@ Generate token for Ryzen
 ```bash
 sunbeam cluster add --name ryzen.lab
 ```
+I think I found a bug in configure, 2023.02/edge.
+
+
+
+I have tailscale installed
+```
+2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 90:b1:1c:a2:69:a8 brd ff:ff:ff:ff:ff:ff
+    altname enp0s25
+3: enp8s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 90:b1:1c:a2:69:a9 brd ff:ff:ff:ff:ff:ff
+4: vlan.1205@eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 90:b1:1c:a2:69:a8 brd ff:ff:ff:ff:ff:ff
+5: mgmt.1201@eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 90:b1:1c:a2:69:a8 brd ff:ff:ff:ff:ff:ff
+7: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN mode DEFAULT group default qlen 500
+    link/none
+```
+
 
 ### Ryzen
 
