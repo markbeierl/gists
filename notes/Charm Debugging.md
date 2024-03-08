@@ -25,11 +25,13 @@ Then in the charm code, add
         debugpy.breakpoint()
 ```
 
-jhack sync src
+```bash
+jhack sync sdcore-upf-k8s/0
+```
 
 inotifywait -e modify,create,delete -r src && rsync -avt src pc7:sdcore-upf-operator
 
-Set the IP address of the unit in .vscode/sett
+Set the IP address of the unit in .vscode/settings.json
 ```json
 {
     "version": "0.2.0",
