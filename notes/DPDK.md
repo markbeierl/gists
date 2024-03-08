@@ -165,6 +165,15 @@ I0308 22:37:45.329981       1 manager.go:156] New resource server is created for
 
 Followed the tutorial using [VMs in OpenStack](https://github.com/markbeierl/gists/blob/main/notes/Sunbeam.md#networking-for-sd-core).
 
+## User Plane With DPDK and Terraform
+
+Build bessd rock with DPDK 22.11 patch:
+```bash
+cd ~/git/GitHub/canonical/sdcore-upf-bess-rock
+gh checkout pr 15
+time rockcraft pack
+```
+
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
 
