@@ -168,6 +168,7 @@ Followed the tutorial using [VMs in OpenStack](https://github.com/markbeierl/gis
 ## User Plane With DPDK and Terraform
 
 Build bessd rock with DPDK 22.11 patch:
+
 ```bash
 cd ~/git/GitHub/canonical/sdcore-upf-bess-rock
 gh checkout pr 15
@@ -175,6 +176,40 @@ time rockcraft pack
 
 sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
 ```
+
+Preapre Terraform modules:
+
+```bash
+cp ~/main.tf .
+cat << EOF >> main.tf
+module "sdcore-user-plane" {
+  source = "git::https://github.com/canonical/terraform-juju-sdcore-k8s//modules/sdcore-user-plane-k8s"
+
+  model_name   = "user-plane"
+  create_model = false
+
+  upf_config = {
+    cni-type              = "macvlan"
+    access-gateway-ip     = "10.202.0.1"
+    access-interface      = "access"
+    access-ip             = "10.202.0.10/24"
+    core-gateway-ip       = "10.203.0.1"
+    core-interface        = "core"
+    core-ip               = "10.203.0.10/24"
+    external-upf-hostname = "upf.mgmt"
+    gnb-subnet            = "10.204.0.0/24"
+  }
+}
+
+resource "juju_offer" "upf-fiveg-n4" {
+  model            = "user-plane"
+  application_name = module.sdcore-user-plane.upf_app_name
+  endpoint         = module.sdcore-user-plane.fiveg_n4_endpoint
+}
+
+EOF
+```
+
 
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
