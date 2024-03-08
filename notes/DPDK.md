@@ -172,6 +172,8 @@ Build bessd rock with DPDK 22.11 patch:
 cd ~/git/GitHub/canonical/sdcore-upf-bess-rock
 gh checkout pr 15
 time rockcraft pack
+
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
 ```
 
 -----------------------------------------------------------------------------
@@ -206,7 +208,6 @@ sudo apt install driverctl
 
 sudo driverctl set-override 0000:00:04.0 vfio-pci
 sudo driverctl set-override 0000:00:05.0 vfio-pci
-
 ```
 
 Definitely need the newer one:
