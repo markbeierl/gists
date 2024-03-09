@@ -236,10 +236,8 @@ So, back to the bundle it is:
 cat << EOF > ~/upf-overlay.yaml
 applications:
   upf:
-    charm: ~/git/GitHub/canonical/sdcore-upf-k8s-operator/sdcore-upf-k8s_ubuntu-22.04-amd64.charm
     resources:
       bessd-image: mbeierl/sdcore-upf-bess:1.3
-      pfcp-image: ghcr.io/canonical/sdcore-upf-pfcpiface:1.3
     options:
       access-gateway-ip: 10.202.0.1
       access-interface-mac-address: fa:16:3e:c4:65:0a
@@ -275,8 +273,20 @@ I need to figure out VLAN tags for the CNI definition. Builing locally on juju c
 ```bash
 cd ~/git/GitHub/canonical/sdcore-upf-k8s-operator/
 time charmcraft pack
-juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay ~/upf-overlay.yaml
-
+juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
+ --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
+ --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
+ --config access-gateway-ip=10.202.0.1 \
+ --config access-interface-mac-address=fa:16:3e:c4:65:0a \
+ --config access-ip=10.202.0.10/16 \
+ --config cni-type=vfioveth \
+ --config core-gateway-ip=10.203.0.1 \
+ --config core-interface-mac-address=fa:16:3e:20:3e:2e \
+ --config core-ip=10.203.0.10/16 \
+ --config enable-hw-checksum=false \
+ --config external-upf-hostname=upf.mgmt \
+ --config gnb-subnet=10.204.0.0/16 \
+ --config upf-mode=dpdk
 ```
 
 -----------------------------------------------------------------------------
