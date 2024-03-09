@@ -54,7 +54,7 @@ For reference
 ```
 
 ```bash
-cat << EOF | sudo tee /etc/rc.local
+cat << 'EOF | sudo tee /etc/rc.local
 #!/bin/bash
 driverctl set-override 0000:09:10.0 vfio-pci
 driverctl set-override 0000:09:10.1 vfio-pci
@@ -71,8 +71,20 @@ driverctl set-override 0000:09:11.3 vfio-pci
 driverctl set-override 0000:09:11.4 vfio-pci
 driverctl set-override 0000:09:11.5 vfio-pci
 
-for i in `seq 0 6`; do ip link set enp8s0f0 vf ${i} spoofchk off ; done
-for i in `seq 0 6`; do ip link set enp8s0f1 vf ${i} spoofchk off ; done
+ip link set enp8s0f0 vf 0 spoofchk off
+ip link set enp8s0f0 vf 1 spoofchk off
+ip link set enp8s0f0 vf 2 spoofchk off
+ip link set enp8s0f0 vf 3 spoofchk off
+ip link set enp8s0f0 vf 4 spoofchk off
+ip link set enp8s0f0 vf 5 spoofchk off
+ip link set enp8s0f0 vf 6 spoofchk off
+ip link set enp8s0f0 vf 0 spoofchk off
+ip link set enp8s0f1 vf 1 spoofchk off
+ip link set enp8s0f1 vf 2 spoofchk off
+ip link set enp8s0f1 vf 3 spoofchk off
+ip link set enp8s0f1 vf 4 spoofchk off
+ip link set enp8s0f1 vf 5 spoofchk off
+ip link set enp8s0f1 vf 6 spoofchk off
 
 EOF
 ```
