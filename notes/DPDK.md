@@ -266,6 +266,10 @@ juju config upf \
   access-ip=10.0.50.1/16
 ```
 
+It failed as that collided with the default route for the container and all manner of network failures were reported.
+
+I need to figure out VLAN tags for the CNI definition.
+
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
 
