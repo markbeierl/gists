@@ -70,6 +70,10 @@ driverctl set-override 0000:09:11.2 vfio-pci
 driverctl set-override 0000:09:11.3 vfio-pci
 driverctl set-override 0000:09:11.4 vfio-pci
 driverctl set-override 0000:09:11.5 vfio-pci
+
+for i in `seq 0 6`; do ip link set enp8s0f0 vf ${i} spoofchk off ; done
+for i in `seq 0 6`; do ip link set enp8s0f1 vf ${i} spoofchk off ; done
+
 EOF
 ```
 
@@ -245,8 +249,8 @@ And it is working. Or at least bessd is configured. Let's try putting on my home
 
 ```bash
 juju config upf \
-  access-gateway-ip=10.0.0.1/24 \
-  access-ip=10.0.50.1
+  access-gateway-ip=10.0.0.1 \
+  access-ip=10.0.50.1/16
 ```
 
 -----------------------------------------------------------------------------
