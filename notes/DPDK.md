@@ -239,7 +239,7 @@ applications:
     charm: ~/git/GitHub/canonical/sdcore-upf-k8s-operator/sdcore-upf-k8s_ubuntu-22.04-amd64.charm
     resources:
       bessd-image: mbeierl/sdcore-upf-bess:1.3
-      pcfp-image: ghcr.io/canonical/sdcore-upf-pfcpiface:1.3
+      pfcp-image: ghcr.io/canonical/sdcore-upf-pfcpiface:1.3
     options:
       access-gateway-ip: 10.202.0.1
       access-interface-mac-address: fa:16:3e:c4:65:0a
@@ -257,7 +257,7 @@ EOF
 
 ```bash
 juju add-model user-plane user-plane-cluster
-juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay upf-overlay.yaml
+juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay ~/upf-overlay.yaml
 ```
 
 And it is working. Or at least bessd is configured. Let's try putting on my home subnet:
@@ -275,7 +275,8 @@ I need to figure out VLAN tags for the CNI definition. Builing locally on juju c
 ```bash
 cd ~/git/GitHub/canonical/sdcore-upf-k8s-operator/
 time charmcraft pack
-juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm --overlay ~/upf-overlay.yaml
+juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay ~/upf-overlay.yaml
+
 ```
 
 -----------------------------------------------------------------------------
