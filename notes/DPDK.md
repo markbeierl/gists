@@ -54,7 +54,7 @@ For reference
 ```
 
 ```bash
-cat << 'EOF | sudo tee /etc/rc.local
+cat << EOF | sudo tee /etc/rc.local
 #!/bin/bash
 driverctl set-override 0000:09:10.0 vfio-pci
 driverctl set-override 0000:09:10.1 vfio-pci
