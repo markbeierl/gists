@@ -189,15 +189,17 @@ module "sdcore-user-plane" {
   create_model = false
 
   upf_config = {
-    cni-type              = "macvlan"
-    access-gateway-ip     = "10.202.0.1"
-    access-interface      = "access"
-    access-ip             = "10.202.0.10/24"
-    core-gateway-ip       = "10.203.0.1"
-    core-interface        = "core"
-    core-ip               = "10.203.0.10/24"
-    external-upf-hostname = "upf.mgmt"
-    gnb-subnet            = "10.204.0.0/24"
+    cni-type                     = "vfioveth"
+    access-gateway-ip            = "10.202.0.1"
+    access-interface-mac-address = "fa:16:3e:c4:65:0a"
+    access-ip                    = "10.202.0.10/16"
+    core-gateway-ip              = "10.203.0.1"
+    core-interface-mac-address   = "fa:16:3e:20:3e:2e"
+    core-ip                      = "10.203.0.10/16"
+    enable-hw-checksum           = "false"
+    external-upf-hostname        = "upf.mgmt"
+    gnb-subnet                   = "10.204.0.0/16"
+    upf-mode                     = "dpdk"
   }
 }
 
@@ -210,6 +212,34 @@ resource "juju_offer" "upf-fiveg-n4" {
 EOF
 ```
 
+But I cannot use TF at the moment because I don't know how to specify a image resource (my locally built bess)
+
+So, back to the bundle it is:
+```bash
+cat << EOF > upf-dpdk.yaml
+applications:
+  upf:
+    resources:
+      bessd-image: mbeierl/sdcore-upf-bess:1.3
+    options:
+      access-gateway-ip: 10.202.0.1
+      access-interface-mac-address: fa:16:3e:c4:65:0a
+      access-ip: 10.202.0.10/24
+      core-gateway-ip: 10.203.0.1
+      core-interface-mac-address: fa:16:3e:20:3e:2e
+      core-ip: 10.203.0.10/24
+      external-upf-hostname: upf.mgmt
+      gnb-subnet: 10.204.0.0/16
+      cni-type: vfioveth
+      enable-hw-checksum: false
+      upf-mode: dpdk
+EOF
+```
+
+```bash
+juju add-model user-plane user-plane-cluster
+juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay upf-overlay.yaml
+```
 
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
