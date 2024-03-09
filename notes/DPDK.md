@@ -216,7 +216,7 @@ But I cannot use TF at the moment because I don't know how to specify a image re
 
 So, back to the bundle it is:
 ```bash
-cat << EOF > upf-dpdk.yaml
+cat << EOF > upf-overlay.yaml
 applications:
   upf:
     resources:
@@ -239,6 +239,14 @@ EOF
 ```bash
 juju add-model user-plane user-plane-cluster
 juju deploy sdcore-user-plane-k8s --trust --channel=1.3/edge --overlay upf-overlay.yaml
+```
+
+And it is working. Or at least bessd is configured. Let's try putting on my home subnet:
+
+```bash
+juju config upf \
+  access-gateway-ip=10.0.0.1/24 \
+  access-ip=10.0.50.1
 ```
 
 -----------------------------------------------------------------------------
