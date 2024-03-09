@@ -233,11 +233,13 @@ But I cannot use TF at the moment because I don't know how to specify a image re
 
 So, back to the bundle it is:
 ```bash
-cat << EOF > upf-overlay.yaml
+cat << EOF > ~/upf-overlay.yaml
 applications:
   upf:
+    charm: ~/git/GitHub/canonical/sdcore-upf-k8s-operator/sdcore-upf-k8s_ubuntu-22.04-amd64.charm
     resources:
       bessd-image: mbeierl/sdcore-upf-bess:1.3
+      pcfp-image: ghcr.io/canonical/sdcore-upf-pfcpiface:1.3
     options:
       access-gateway-ip: 10.202.0.1
       access-interface-mac-address: fa:16:3e:c4:65:0a
@@ -268,7 +270,13 @@ juju config upf \
 
 It failed as that collided with the default route for the container and all manner of network failures were reported.
 
-I need to figure out VLAN tags for the CNI definition.
+I need to figure out VLAN tags for the CNI definition. Builing locally on juju controller
+
+```bash
+cd ~/git/GitHub/canonical/sdcore-upf-k8s-operator/
+time charmcraft pack
+juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm --overlay ~/upf-overlay.yaml
+```
 
 -----------------------------------------------------------------------------
 # DPDK only in a User Plane VM
