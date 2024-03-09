@@ -92,7 +92,8 @@ EOF
 ```bash
 sudo chmod +x /etc/rc.local
 sudo /etc/rc.local
-sudo sudo driverctl list-devices
+sudo driverctl list-devices
+ip link show
 ```
 
 ## SR-IOV K8s Setup
