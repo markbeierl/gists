@@ -47,9 +47,9 @@ juju add-machine ssh:ubuntu@ryzen.lab --private-key ./id_rsa
 ```bash
 juju deploy sdcore-upf \
   --channel=1.3/edge \
-  --base ubuntu@22.04
-  --config access-interface-name=enp8s0f0 \
-  --config core-interface-name=enp8s0f1 \
+  --base ubuntu@22.04 \
+  --config access-interface-name=vlan.1202 \
+  --config core-interface-name=vlan.1203 \
   --config gnb-subnet=10.204.0.0/16 \
   --to 0
 ```
