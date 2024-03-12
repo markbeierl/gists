@@ -57,8 +57,12 @@
 			"path": "../../canonical/sdcore-udr-k8s-operator"
 		},
 		{
-			"name": "UPF",
+			"name": "UPF K8s",
 			"path": "../../canonical/sdcore-upf-k8s-operator"
+		},
+		{
+			"name": "UPF Machine",
+			"path": "../../canonical/sdcore-upf-operator"
 		},
 		{
 			"name": "WebUI",
