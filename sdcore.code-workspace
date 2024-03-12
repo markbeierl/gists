@@ -65,6 +65,10 @@
 			"path": "../../canonical/sdcore-upf-operator"
 		},
 		{
+			"name": "UPF Snap",
+			"path": "../../canonical/sdcore-upf-snap"
+		},
+		{
 			"name": "WebUI",
 			"path": "../../canonical/sdcore-webui-k8s-operator"
 		},
