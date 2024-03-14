@@ -66,3 +66,25 @@ Cleanup on target host:
 sudo /sbin/remove-juju-services
 sudo snap remove sdcore-upf
 ```
+
+# Snapcraft fun
+
+## Building the Snap
+
+Multipass could neither mount my cephfs directory, nor provide a large VM for compilation. So I tried LXD, and much better - the build environment uses all 12 CPUs
+
+```bash
+export SNAPCRAFT_BUILD_ENVIRONMENT=lxd
+snapcraft
+```
+
+## Examining the primed Snap
+```bash
+snapcraft prime --shell-after
+```
+
+From there, I see
+
+- `/root/prime`
+- `/root/stage`
+
