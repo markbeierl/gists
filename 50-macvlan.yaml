@@ -9,13 +9,13 @@ network:
         ens3:
             dhcp4: true
             match:
-                macaddress: fa:16:3e:be:20:a0
+                macaddress: fa:16:3e:26:49:38
             set-name: ens3
         ens4:
             addresses:
             - 10.202.0.2/16
             match:
-                macaddress: fa:16:3e:c4:65:0a
+                macaddress: fa:16:3e:8b:61:89
             mtu: 1500
             nameservers:
                 addresses:
@@ -29,7 +29,7 @@ network:
             addresses:
             - 10.203.0.2/16
             match:
-                macaddress: fa:16:3e:20:3e:2e
+                macaddress: fa:16:3e:7c:7a:cc
             mtu: 1500
             nameservers:
                 addresses:
