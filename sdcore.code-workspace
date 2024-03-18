@@ -57,7 +57,7 @@
 			"path": "../../canonical/sdcore-udr-k8s-operator"
 		},
 		{
-			"name": "UPF K8s",
+			"name": "UPF K8s Charm",
 			"path": "../../canonical/sdcore-upf-k8s-operator"
 		},
 		{
@@ -69,12 +69,12 @@
 			"path": "../../canonical/sdcore-upf-snap"
 		},
 		{
-			"name": "WebUI",
-			"path": "../../canonical/sdcore-webui-k8s-operator"
-		},
-		{
 			"name": "UPF Rock",
 			"path": "../../canonical/sdcore-upf-bess-rock"
+		},
+		{
+			"name": "WebUI",
+			"path": "../../canonical/sdcore-webui-k8s-operator"
 		},
 		{
 			"name": "Tests",
