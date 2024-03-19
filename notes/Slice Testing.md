@@ -28,7 +28,7 @@ Bugs:
 ### Subscribers
 
 ```bash
-for IMSI in `seq 81 82`; do
+for IMSI in `seq 81 89`; do
   curl -v ${WEBUI_IP}:5000/api/subscriber/imsi-2089301000074${IMSI} \
   --header 'Content-Type: text/plain' \
   --data "{

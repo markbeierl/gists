@@ -393,10 +393,10 @@ applications:
       bessd-image: mbeierl/sdcore-upf-bess:1.3
     options:
       access-gateway-ip: 10.202.0.1
-      access-interface-mac-address: fa:16:3e:c4:65:0a
+      access-interface-mac-address: fa:16:3e:8b:61:89
       access-ip: 10.202.0.10/24
       core-gateway-ip: 10.203.0.1
-      core-interface-mac-address: fa:16:3e:20:3e:2e
+      core-interface-mac-address: fa:16:3e:7c:7a:cc
       core-ip: 10.203.0.10/24
       external-upf-hostname: upf.mgmt
       gnb-subnet: 10.204.0.0/16
@@ -407,7 +407,7 @@ EOF
 ```
 
 ```bash
-for app in amf ausf nms nrf nssf pcf smf udm udr webui ; do juju integrate ${app}:logging grafana-agent-k8s ; done
+juju deploy
 ```
 
 On the gnbsim VM, run UERANSIM and use:
@@ -415,4 +415,22 @@ On the gnbsim VM, run UERANSIM and use:
 ```bash
 sudo ip route add 10.203.0.0/16 dev uesimtun0
 ping -I uesimtun0 service-1.core -c 6000 -i .1 -s 36 | grep rtt
+```
+
+
+# Macvlan
+
+```bash
+juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
+ --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
+ --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
+ --config access-gateway-ip=10.202.0.1 \
+ --config access-interface=access \
+ --config access-ip=10.202.0.10/16 \
+ --config cni-type=vfioveth \
+ --config core-gateway-ip=10.203.0.1 \
+ --config core-interface=core \
+ --config core-ip=10.203.0.10/16 \
+ --config external-upf-hostname=upf.mgmt \
+ --config gnb-subnet=10.204.0.0/16
 ```
