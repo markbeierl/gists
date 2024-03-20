@@ -89,6 +89,10 @@
 			"path": "../../canonical/sdcore-cos-configuration"
 		},
 		{
+			"name": "GitHub Workflows",
+			"path": "../../canonical/sdcore-github-workflows"
+		},
+		{
 			"name": "kubernetes-charm-libraries",
 			"path": "../../canonical/kubernetes-charm-libraries"
 		},
