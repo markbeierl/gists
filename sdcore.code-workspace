@@ -97,6 +97,10 @@
 			"path": "../../canonical/kubernetes-charm-libraries"
 		},
 		{
+			"name": "OMEC AMF",
+			"path": "../../omec-project/amf"
+		},
+		{
 			"name": "OMEC bess",
 			"path": "../../omec-project/bess"
 		},
