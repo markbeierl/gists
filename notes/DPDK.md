@@ -394,10 +394,10 @@ applications:
     options:
       access-gateway-ip: 10.202.0.1
       access-interface-mac-address: fa:16:3e:8b:61:89
-      access-ip: 10.202.0.10/24
+      access-ip: 10.202.0.10/16
       core-gateway-ip: 10.203.0.1
       core-interface-mac-address: fa:16:3e:7c:7a:cc
-      core-ip: 10.203.0.10/24
+      core-ip: 10.203.0.10/16
       external-upf-hostname: upf.mgmt
       gnb-subnet: 10.204.0.0/16
       cni-type: vfioveth
@@ -422,15 +422,16 @@ ping -I uesimtun0 service-1.core -c 6000 -i .1 -s 36 | grep rtt
 
 ```bash
 juju deploy ./sdcore-upf-k8s_ubuntu-22.04-amd64.charm upf \
- --resource bessd-image=mbeierl/sdcore-upf-bess:1.3 \
+ --resource bessd-image=ghcr.io/canonical/sdcore-upf-bess:1.3 \
  --resource pfcp-agent-image=ghcr.io/canonical/sdcore-upf-pfcpiface:1.3 \
  --config access-gateway-ip=10.202.0.1 \
  --config access-interface=access \
  --config access-ip=10.202.0.10/16 \
- --config cni-type=vfioveth \
+ --config cni-type=macvlan \
  --config core-gateway-ip=10.203.0.1 \
  --config core-interface=core \
  --config core-ip=10.203.0.10/16 \
  --config external-upf-hostname=upf.mgmt \
  --config gnb-subnet=10.204.0.0/16
 ```
+
