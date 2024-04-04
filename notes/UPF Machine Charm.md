@@ -9,6 +9,43 @@ Have .ssh/authorized keys setup for ubuntu. User also has sudo access
 Export local LXD info to add as a cloud to the SD-Core Controller
 
 ```bash
+sudo snap install lxd
+cat << EOF | lxd init --preseed
+config:
+  core.https_address: '[::]:8443'
+networks:
+- config:
+    ipv4.address: auto
+    ipv6.address: none
+  description: ""
+  name: lxdbr0
+  type: ""
+  project: default
+storage_pools:
+- config:
+    size: 5GiB
+  description: ""
+  name: default
+  driver: zfs
+profiles:
+- config: {}
+  description: ""
+  devices:
+    eth0:
+      name: eth0
+      network: lxdbr0
+      type: nic
+    root:
+      path: /
+      pool: default
+      type: disk
+  name: default
+projects: []
+cluster: null
+EOF
+```
+
+```bash
 CONTROLLER_NAME=sdcore
 LXDENDPOINT=10.201.0.104
 LXD_CLOUD=~/lxd-cloud.yaml
@@ -38,7 +75,7 @@ lxc config trust add local: ~/client.crt
 juju add-cloud -c $CONTROLLER_NAME lxd-cloud $LXD_CLOUD --force
 juju add-credential -c $CONTROLLER_NAME lxd-cloud -f $LXD_CREDENTIALS
 
-juju add-model user-plane lxd-cloud
+juju add-model user-machine lxd-cloud
 juju add-machine ssh:ubuntu@ryzen.lab --private-key ./id_rsa
 ```
 
@@ -47,8 +84,9 @@ juju add-machine ssh:ubuntu@ryzen.lab --private-key ./id_rsa
 ```bash
 juju deploy sdcore-upf \
   --base ubuntu@22.04 \
-  --config access-interface-name=vlan.1202 \
-  --config core-interface-name=vlan.1203 \
+  --channel=1.3/edge \
+  --config access-interface-name=v1202 \
+  --config core-interface-name=v1203 \
   --config gnb-subnet=10.204.0.0/16 \
   --to 0
 ```
