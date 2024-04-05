@@ -198,7 +198,8 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.203.3.2 -
 openstack << EOF
 flavor create 2C-4R-20D-hp    --public --vcpus 2 --ram 4096 --disk 20 --property hw:mem_page_size=1GB
 
-flavor create juju-controller --public --vcpus 2 --ram 8192 --disk 120
+flavor create cos             --public --vcpus 2 --ram 8192 --disk 120
+flavor create juju-controller --public --vcpus 2 --ram 8192 --disk 20
 flavor create control-plane   --public --vcpus 4 --ram 8192 --disk 120 
 flavor create user-plane      --public --vcpus 4 --ram 8192 --disk 20
 flavor create gnbsim          --public --vcpus 4 --ram 4092 --disk 20
