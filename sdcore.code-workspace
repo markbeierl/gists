@@ -85,6 +85,10 @@
 			"path": "../../canonical/sdcore-bundles"
 		},
 		{
+			"name": "Terraform",
+			"path": "../../canonical/terraform-juju-sdcore-k8s/"
+		},
+		{
 			"name": "COS Config",
 			"path": "../../canonical/sdcore-cos-configuration"
 		},
