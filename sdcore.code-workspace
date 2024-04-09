@@ -126,6 +126,10 @@
 		{
 			"path": "../../canonical/../markbeierl/ueransim-rock"
 		},
+		{
+			"name": "Sylva Core",
+			"path": "../../../GitLab/sylva/sylva-core/"
+		},
 	],
 	"settings": {
 		"workbench.colorTheme": "Quiet Light"
