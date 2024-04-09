@@ -150,6 +150,7 @@ openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.101
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.102 --enable --project ${PROJECT} --network management user-plane.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.103 --enable --project ${PROJECT} --network management gnbsim.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.104 --enable --project ${PROJECT} --network management juju-controller.mgmt&
+openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.105 --enable --project ${PROJECT} --network management cos.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.14 --enable --project ${PROJECT} --network management ueransim.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.0.15 --enable --project ${PROJECT} --network management radio.mgmt&
 openstack port create --disable-port-security --fixed-ip ip-address=10.201.2.1 --enable --project ${PROJECT} --network management ue-1.mgmt&
@@ -249,6 +250,7 @@ sudo sysctl -w net.ipv4.ip_forward=1 | sudo tee /etc/sysctl.conf
 ### SD-Core VMs
 
 ```bash
+openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor cos --image ubuntu --nic port-id=cos.mgmt cos&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor juju-controller --image ubuntu --nic port-id=juju-controller.mgmt juju-controller&
 openstack server create --availability-zone xeon  --key-name ${KEY_NAME} --flavor control-plane --image ubuntu --nic port-id=control-plane.mgmt control-plane&
 openstack server create --availability-zone ryzen --key-name ${KEY_NAME} --flavor user-plane --image ubuntu --nic port-id=user-plane.mgmt --nic port-id=user-plane.access --nic port-id=user-plane.core user-plane&
@@ -283,8 +285,9 @@ scp ~/.ssh/id_rsa ubuntu@user-plane.mgmt:.ssh/
 scp ~/.ssh/id_rsa ubuntu@control-plane.mgmt:.ssh/
 scp ~/.ssh/id_rsa ubuntu@gnbsim.mgmt:.ssh/
 scp ~/.ssh/id_rsa ubuntu@juju-controller.mgmt:.ssh/
+scp ~/.ssh/id_rsa ubuntu@cos.mgmt:.ssh/
 
-for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ueransim.mgmt ; do
+for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ueransim.mgmt cos.mgmt ; do
   setup-ceph.sh $VM
 done
 ```
