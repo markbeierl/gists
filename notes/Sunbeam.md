@@ -292,3 +292,10 @@ for VM in control-plane.mgmt user-plane.mgmt juju-controller.mgmt gnbsim.mgmt ue
 done
 ```
 
+# Juju controller Metallb
+
+This is for using split cos-lite/juju controller. Probably not a good idea after all, as I had to modify the tf plans for cos-lite
+
+```bash
+sudo microk8s enable metallb:10.201.0.50-10.201.0.50,10.201.0.52-10.201.0.52
+```
