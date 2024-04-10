@@ -25,6 +25,10 @@
 			"path": "../../canonical/sdcore-gnbsim-k8s-operator"
 		},
 		{
+			"name": "gNB Integrator",
+			"path": "../../canonical/sdcore-gnb-integrator"
+		},
+		{
 			"name": "NMS",
 			"path": "../../canonical/sdcore-nms-k8s-operator"
 		},
