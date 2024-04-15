@@ -5,6 +5,7 @@ In the project's .vscode directory, add the launch.json and settings.json as fol
 ```bash
 . .tox/unit/bin/activate
 pip install pytest-cov
+deactivate
 ```
 
 Copy the .env file into the project's root directory.
