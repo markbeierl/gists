@@ -97,7 +97,7 @@ ip link set enp8s0f0 vf 3 spoofchk off vlan 1202
 ip link set enp8s0f0 vf 4 spoofchk off vlan 1202
 ip link set enp8s0f0 vf 5 spoofchk off vlan 1202
 ip link set enp8s0f0 vf 6 spoofchk off vlan 1202
-ip link set enp8s0f0 vf 0 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 0 spoofchk off vlan 1203
 ip link set enp8s0f1 vf 1 spoofchk off vlan 1203
 ip link set enp8s0f1 vf 2 spoofchk off vlan 1203
 ip link set enp8s0f1 vf 3 spoofchk off vlan 1203
