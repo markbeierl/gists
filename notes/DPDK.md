@@ -28,6 +28,7 @@ sudo microk8s enable multus
 sudo usermod -a -G microk8s $USER
 sudo snap alias microk8s.kubectl kubectl
 sudo microk8s.config > user-plane-cluster.yaml
+sudo microk8s enable metallb:10.201.0.200/32
 ```
 
 ## VF Configuration
@@ -51,6 +52,24 @@ For reference
 09:11.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.6
 09:11.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.7
 09:11.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.7
+
+    vf 0     link/ether 96:de:a6:63:27:0a brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 1     link/ether e2:e8:59:1e:b2:7d brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 2     link/ether 26:b9:dd:6d:26:b1 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 3     link/ether 12:e7:dc:f4:96:4f brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 4     link/ether f6:9a:d5:0d:a5:d8 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 5     link/ether f2:3d:9a:8b:4e:64 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 6     link/ether 76:4d:9a:c7:eb:ff brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+
+    vf 0     link/ether 36:cd:1f:43:b7:2b brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 1     link/ether 0a:de:5c:ef:4c:dd brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 2     link/ether 2a:8c:69:30:a2:56 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 3     link/ether ce:89:20:66:e5:b8 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 4     link/ether 1e:82:5c:79:5c:e6 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 5     link/ether e2:d3:00:3e:f0:8f brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+    vf 6     link/ether ee:f3:bd:91:27:28 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
+
+
 ```
 
 ```bash
@@ -71,20 +90,20 @@ driverctl set-override 0000:09:11.3 vfio-pci
 driverctl set-override 0000:09:11.4 vfio-pci
 driverctl set-override 0000:09:11.5 vfio-pci
 
-ip link set enp8s0f0 vf 0 spoofchk off
-ip link set enp8s0f0 vf 1 spoofchk off
-ip link set enp8s0f0 vf 2 spoofchk off
-ip link set enp8s0f0 vf 3 spoofchk off
-ip link set enp8s0f0 vf 4 spoofchk off
-ip link set enp8s0f0 vf 5 spoofchk off
-ip link set enp8s0f0 vf 6 spoofchk off
-ip link set enp8s0f0 vf 0 spoofchk off
-ip link set enp8s0f1 vf 1 spoofchk off
-ip link set enp8s0f1 vf 2 spoofchk off
-ip link set enp8s0f1 vf 3 spoofchk off
-ip link set enp8s0f1 vf 4 spoofchk off
-ip link set enp8s0f1 vf 5 spoofchk off
-ip link set enp8s0f1 vf 6 spoofchk off
+ip link set enp8s0f0 vf 0 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 1 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 2 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 3 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 4 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 5 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 6 spoofchk off vlan 1202
+ip link set enp8s0f0 vf 0 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 1 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 2 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 3 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 4 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 5 spoofchk off vlan 1203
+ip link set enp8s0f1 vf 6 spoofchk off vlan 1203
 
 EOF
 ```
