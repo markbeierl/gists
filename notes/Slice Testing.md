@@ -47,7 +47,7 @@ curl -v ${WEBUI_IP}:5000/config/v1/device-group/DG-1 \
 --header 'Content-Type: application/json' \
 --data '{
     "imsis": [
-        "208930100007481"
+        "208930100007487"
     ],
     "site-info": "site-1",
     "ip-domain-name": "domain1",

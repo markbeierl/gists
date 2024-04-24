@@ -99,6 +99,17 @@ juju deploy ./sdcore-upf_ubuntu-22.04-amd64.charm \
   --to 0
 ```
 
+juju add-machine ssh:ubuntu@ryzen.lab --private-key ~/./id_rsa
+juju deploy ./sdcore-upf_ubuntu-22.04-amd64.charm \
+  --config access-ip=10.202.0.10/24 \
+  --config access-gateway-ip=10.202.0.1 \
+  --config access-interface-name=v1202 \
+  --config core-ip=10.203.0.10/24 \
+  --config core-gateway-ip=10.203.0.1 \
+  --config core-interface-name=v1203 \
+  --config gnb-subnet=10.204.0.0/16 \
+  --to 3
+
 Cleanup on target host:
 ```
 sudo /sbin/remove-juju-services
@@ -126,66 +137,4 @@ From there, I see
 - `/root/prime`
 - `/root/stage`
 
-# Bess Configuration Script
 
-It tries to free up CPUs by forcing affinity on every process to a subset of the CPUs, reserving some for itself. This script fails with Error 22 Invalid argument when run via the snap:
-
-```python
-import psutil
-
-def get_process_affinity():
-    return psutil.Process().cpu_affinity()
-
-
-def set_process_affinity(pid, cpus):
-    psutil.Process(pid).cpu_affinity(cpus)
-
-
-def set_process_affinity_all(cpus):
-    for pid in psutil.pids():
-        for thread in psutil.Process(pid).threads():
-            set_process_affinity(thread.id, cpus)
-
-cores = get_process_affinity()
-print (f"cores={cores}")
-workers = cores[:1]
-print (f"workers={workers}")
-if len(cores) > 1:
-    nonworkers = cores[1:]
-else:
-    nonworkers = cores
-
-print (f"nonworkers={nonworkers}")
-print (f"pids={psutil.pids()}")
-
-for pid in psutil.pids():
-    print (f"{pid}: {psutil.Process(pid).name()}")
-    for thread in psutil.Process(pid).threads():
-        print (f"thread.id={thread.id}: {psutil.Process(thread.id).name()}")
-        psutil.Process(thread.id).cpu_affinity(nonworkers)
-
-```
-
-https://github.com/omec-project/upf/issues/779
-
-Turns out the host kernel, being 6.5, now sets `PF_NO_SETAFFINITY` to certain core pids. This is what gives us the Error 22.
-
-Patch:
-```
-cat << EOF | patch -p1
---- a/conf/utils.py
-+++ b/conf/utils.py
-@@ -123,7 +123,10 @@ def get_process_affinity():
-
-
- def set_process_affinity(pid, cpus):
--    psutil.Process(pid).cpu_affinity(cpus)
-+    try:
-+        psutil.Process(pid).cpu_affinity(cpus)
-+    except OSError as e:
-+        print(f"Failed to set affinity on {psutil.Process(pid).name()}: {e}")
-
-
- def set_process_affinity_all(cpus):
-EOF
-```
