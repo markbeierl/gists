@@ -38,20 +38,20 @@ For reference
 ```bash
 08:00.0 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  PF #1
 08:00.1 Ethernet controller: Intel Corporation 82576 Gigabit Network Connection (rev 01)  PF #2
-09:10.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.1
-09:10.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.1
-09:10.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.2
-09:10.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.2
-09:10.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.3
-09:10.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.3
-09:10.6 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.4
-09:10.7 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.4
-09:11.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.5
-09:11.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.5
-09:11.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.6
-09:11.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.6
-09:11.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.7
-09:11.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.7
+09:10.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.0
+09:10.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.0
+09:10.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.1
+09:10.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.1
+09:10.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.2
+09:10.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.2
+09:10.6 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.3
+09:10.7 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.3
+09:11.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.4
+09:11.1 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.4
+09:11.2 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.5
+09:11.3 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.5
+09:11.4 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #1.6
+09:11.5 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)            VF #2.6
 
     vf 0     link/ether 96:de:a6:63:27:0a brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
     vf 1     link/ether e2:e8:59:1e:b2:7d brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
