@@ -7,5 +7,6 @@
         "--cov=src/",
         "--cov-report=xml",
         "tests/"
-    ]
+    ],
+    "workbench.colorTheme": "Quiet Light"
 }
