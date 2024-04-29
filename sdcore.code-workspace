@@ -5,8 +5,8 @@
 			"path": "."
 		},
 		{
-			"name": "Charmed 5g Docs",
-			"path": "../../canonical/charmed-5g"
+			"name": "Charmed Aether SD-Core Docs",
+			"path": "../../canonical/charmed-aether-sd-core"
 		},
 		{
 			"name": "AMF",
