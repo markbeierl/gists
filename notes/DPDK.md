@@ -68,8 +68,23 @@ For reference
     vf 4     link/ether 1e:82:5c:79:5c:e6 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
     vf 5     link/ether e2:d3:00:3e:f0:8f brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
     vf 6     link/ether ee:f3:bd:91:27:28 brd ff:ff:ff:ff:ff:ff, spoof checking off, link-state auto, trust off
-
-
+```
+It looks like the MAC addresses are randomly assigned:
+```
+DPDK port_id  0 (net_e1000_igb_vf)   RXQ 2 TXQ 2  26:77:b3:cc:9b:bb  00000000:09:10.00 8086:10ca   numa_node -1
+DPDK port_id  1 (net_e1000_igb_vf)   RXQ 2 TXQ 2  da:3f:ab:83:62:20  00000000:09:10.01 8086:10ca   numa_node -1
+DPDK port_id  2 (net_e1000_igb_vf)   RXQ 2 TXQ 2  02:27:5b:41:96:bd  00000000:09:10.02 8086:10ca   numa_node -1
+DPDK port_id  3 (net_e1000_igb_vf)   RXQ 2 TXQ 2  96:15:79:18:a3:3a  00000000:09:10.03 8086:10ca   numa_node -1
+DPDK port_id  4 (net_e1000_igb_vf)   RXQ 2 TXQ 2  1a:fc:04:95:2f:d5  00000000:09:10.04 8086:10ca   numa_node -1
+DPDK port_id  5 (net_e1000_igb_vf)   RXQ 2 TXQ 2  ea:6f:d5:2f:ff:6f  00000000:09:10.05 8086:10ca   numa_node -1
+DPDK port_id  6 (net_e1000_igb_vf)   RXQ 2 TXQ 2  f6:a9:ad:36:3e:16  00000000:09:10.06 8086:10ca   numa_node -1
+DPDK port_id  7 (net_e1000_igb_vf)   RXQ 2 TXQ 2  6a:15:1d:cc:ef:92  00000000:09:10.07 8086:10ca   numa_node -1
+DPDK port_id  8 (net_e1000_igb_vf)   RXQ 2 TXQ 2  d6:b9:d3:7b:47:55  00000000:09:11.00 8086:10ca   numa_node -1
+DPDK port_id  9 (net_e1000_igb_vf)   RXQ 2 TXQ 2  92:f4:72:ac:9b:4e  00000000:09:11.01 8086:10ca   numa_node -1
+DPDK port_id 10 (net_e1000_igb_vf)   RXQ 2 TXQ 2  5a:e4:c3:46:a5:9c  00000000:09:11.02 8086:10ca   numa_node -1
+DPDK port_id 11 (net_e1000_igb_vf)   RXQ 2 TXQ 2  26:5f:4f:b7:00:c7  00000000:09:11.03 8086:10ca   numa_node -1
+DPDK port_id 12 (net_e1000_igb_vf)   RXQ 2 TXQ 2  7a:de:13:b1:0c:eb  00000000:09:11.04 8086:10ca   numa_node -1
+DPDK port_id 13 (net_e1000_igb_vf)   RXQ 2 TXQ 2  26:50:81:e5:dd:a3  00000000:09:11.05 8086:10ca   numa_node -1
 ```
 
 ```bash
