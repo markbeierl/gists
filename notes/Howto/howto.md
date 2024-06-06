@@ -29,3 +29,10 @@ juju scale-application amf 1
 sleep 30
 juju scale-application traefik 1
 ```
+
+## CPU Set for DPDK
+
+```yaml
+    meson-parameters:
+      - -Dmachine=sandybridge
+```
