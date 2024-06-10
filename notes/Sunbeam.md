@@ -38,9 +38,9 @@ microceph_config:
 Install controller and first compute on Xeon
 
 ```bash
-sudo snap install openstack --channel 2023.2/edge
+sudo snap install openstack --channel 2023.2/stable
 sunbeam prepare-node-script | bash -x
-sunbeam cluster bootstrap --database single --role control --role compute --manifest ~/sunbeam-manifest.yaml
+sunbeam cluster bootstrap --database single --role control --role compute
 sunbeam configure deployment -o ./sunbeam-user.rc
 sunbeam openrc > sunbeam-admin.rc
 ```
@@ -53,7 +53,7 @@ sunbeam cluster add --name ryzen.lab
 ### Ryzen
 
 ```bash
-sudo snap install openstack --channel 2023.2/edge
+sudo snap install openstack --channel 2023.2/stable
 sunbeam prepare-node-script | bash -x
 ```
 
