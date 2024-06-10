@@ -13,6 +13,10 @@
 			"path": "../../canonical/sdcore-amf-k8s-operator"
 		},
 		{
+			"name": "AMF Rock",
+			"path": "../../canonical/sdcore-amf-rock"
+		},
+		{
 			"name": "AUSF",
 			"path": "../../canonical/sdcore-ausf-k8s-operator"
 		},
