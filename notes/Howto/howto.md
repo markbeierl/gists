@@ -30,9 +30,15 @@ sleep 30
 juju scale-application traefik 1
 ```
 
-## CPU Set for DPDK
+# CPU Set for DPDK
 
 ```yaml
     meson-parameters:
       - -Dmachine=sandybridge
+```
+
+# Import rock into microk8s
+
+```
+sudo microk8s ctr image import --base-name docker.io/mbeierl/sdcore-upf-bess ~/git/GitHub/canonical/sdcore-upf-bess-rock/sdcore-upf-bess_1.3_amd64.rock
 ```
