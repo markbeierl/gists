@@ -21,12 +21,16 @@
 			"path": "../../canonical/sdcore-ausf-k8s-operator"
 		},
 		{
-			"name": "AUSF",
-			"path": "../../canonical/sdcore-ausf-k8s-operator"
+			"name": "AUSF Rock",
+			"path": "../../canonical/sdcore-ausf-rock"
 		},
 		{
 			"name": "gNB Sim",
 			"path": "../../canonical/sdcore-gnbsim-k8s-operator"
+		},
+		{
+			"name": "gNB Sim Rock",
+			"path": "../../canonical/sdcore-gnbsim-rock"
 		},
 		{
 			"name": "gNB Integrator",
@@ -37,16 +41,32 @@
 			"path": "../../canonical/sdcore-nms-k8s-operator"
 		},
 		{
+			"name": "NMS Rock",
+			"path": "../../canonical/sdcore-nms"
+		},
+		{
 			"name": "NRF",
 			"path": "../../canonical/sdcore-nrf-k8s-operator"
+		},
+		{
+			"name": "NRF Rock",
+			"path": "../../canonical/sdcore-nrf-rock"
 		},
 		{
 			"name": "NSSF",
 			"path": "../../canonical/sdcore-nssf-k8s-operator"
 		},
 		{
+			"name": "NSSF Rock",
+			"path": "../../canonical/sdcore-nssf-rock"
+		},
+		{
 			"name": "PCF",
 			"path": "../../canonical/sdcore-pcf-k8s-operator"
+		},
+		{
+			"name": "PCF Rock",
+			"path": "../../canonical/sdcore-pcf-rock"
 		},
 		{
 			"name": "Router",
@@ -57,12 +77,24 @@
 			"path": "../../canonical/sdcore-smf-k8s-operator"
 		},
 		{
+			"name": "SMF Rock",
+			"path": "../../canonical/sdcore-smf-rock"
+		},
+		{
 			"name": "UDM",
 			"path": "../../canonical/sdcore-udm-k8s-operator"
 		},
 		{
+			"name": "UDM Rock",
+			"path": "../../canonical/sdcore-udm-rock"
+		},
+		{
 			"name": "UDR",
 			"path": "../../canonical/sdcore-udr-k8s-operator"
+		},
+		{
+			"name": "UDR Rock",
+			"path": "../../canonical/sdcore-udr-rock"
 		},
 		{
 			"name": "UPF K8s Charm",
@@ -83,6 +115,10 @@
 		{
 			"name": "WebUI",
 			"path": "../../canonical/sdcore-webui-k8s-operator"
+		},
+		{
+			"name": "WebUI Rock",
+			"path": "../../canonical/sdcore-webui-rock"
 		},
 		{
 			"name": "Tests",

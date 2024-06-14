@@ -58,5 +58,3 @@ Set the IP address of the unit in .vscode/settings.json
 juju debug-hooks sdcore-upf/3
 
 sshuttle -vr control-plane.mgmt 10.1.235.0/24
-
-## Importing
